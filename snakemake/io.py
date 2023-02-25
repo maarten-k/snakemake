@@ -520,7 +520,7 @@ class _IOFile(str):
             if not is_symlink:
                 if is_dir:
                     # if no timestamp, hence go on as if it is a file.
-                    with supress(FileNotFoundError):
+                    with suppress(FileNotFoundError):
                         mtime = get_dir_mtime()
 
                 # In the usual case, not a dir, not a symlink.
