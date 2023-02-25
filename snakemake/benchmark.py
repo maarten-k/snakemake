@@ -384,5 +384,5 @@ def print_benchmark_records(records, file_):
 
 def write_benchmark_records(records, path):
     """Write benchmark records to file at path"""
-    with open(path, "wt") as f:
+    with open(path, "w") as f:
         print_benchmark_records(records, f)

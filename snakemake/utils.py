@@ -92,8 +92,7 @@ def validate(data, schema, set_default=True):
                 if "default" in subschema:
                     instance.setdefault(property, subschema["default"])
 
-            for error in validate_properties(validator, properties, instance, schema):
-                yield error
+            yield from validate_properties(validator, properties, instance, schema)
 
         return validators.extend(validator_class, {"properties": set_defaults})
 
@@ -525,7 +524,7 @@ def available_cpu_count():
             res = bin(int(m.group(1).replace(",", ""), 16)).count("1")
             if res > 0:
                 return min(res, multiprocessing.cpu_count())
-    except IOError:
+    except OSError:
         pass
 
     return multiprocessing.cpu_count()
@@ -670,7 +669,7 @@ class Paramspace:
             if isinstance(filename_params, str) and filename_params == "*":
                 filename_params = dataframe.columns
 
-            if any((param not in dataframe.columns for param in filename_params)):
+            if any(param not in dataframe.columns for param in filename_params):
                 raise KeyError(
                     "One or more entries of filename_params are not valid coulumn names for the param file."
                 )

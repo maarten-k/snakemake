@@ -252,7 +252,7 @@ class WMSLogger:
 
             # For an exception, return the name and a message
             elif key == "exception":
-                result[key] = "%s: %s" % (
+                result[key] = "{}: {}".format(
                     msg["exception"].__class__.__name__,
                     msg["exception"] or "Exception",
                 )
@@ -468,7 +468,7 @@ class Logger:
         def show_logs(logs):
             for f in logs:
                 try:
-                    content = open(f, "r").read()
+                    content = open(f).read()
                 except FileNotFoundError:
                     yield f"Logfile {f} not found."
                     return
@@ -702,7 +702,7 @@ def setup_logger(
         quiet = set()
     elif isinstance(quiet, bool):
         if quiet:
-            quiet = set(["progress", "rules"])
+            quiet = {"progress", "rules"}
         else:
             quiet = set()
     elif isinstance(quiet, list):

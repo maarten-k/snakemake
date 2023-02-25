@@ -41,7 +41,7 @@ class RemoteProvider(AbstractRemoteProvider):
         retry=None,
         **kwargs
     ):
-        super(RemoteProvider, self).__init__(
+        super().__init__(
             *args,
             keep_local=keep_local,
             stay_on_remote=stay_on_remote,
@@ -67,9 +67,7 @@ class RemoteObject(AbstractRemoteRetryObject):
     size_re = re.compile(r"^\s*Size: ([0-9]+).*$", flags=re.MULTILINE)
 
     def __init__(self, *args, keep_local=False, provider=None, **kwargs):
-        super(RemoteObject, self).__init__(
-            *args, keep_local=keep_local, provider=provider, **kwargs
-        )
+        super().__init__(*args, keep_local=keep_local, provider=provider, **kwargs)
 
     def _gfal(self, cmd, *args, retry=None, raise_workflow_error=True):
         check_deprecated_retry(retry)

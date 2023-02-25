@@ -124,7 +124,7 @@ class Persistence:
         for path, _, filenames in os.walk(self._metadata_path):
             path = Path(path)
             for filename in filenames:
-                with open(path / filename, "r") as f:
+                with open(path / filename) as f:
                     try:
                         record = json.load(f)
                     except json.JSONDecodeError:
@@ -233,7 +233,7 @@ class Persistence:
 
     def conda_cleanup_envs(self):
         # cleanup envs
-        in_use = set(env.hash[:8] for env in self.dag.conda_envs.values())
+        in_use = {env.hash[:8] for env in self.dag.conda_envs.values()}
         for d in os.listdir(self.conda_env_path):
             if len(d) >= 8 and d[:8] not in in_use:
                 if os.path.isdir(os.path.join(self.conda_env_path, d)):
@@ -242,7 +242,7 @@ class Persistence:
                     os.remove(os.path.join(self.conda_env_path, d))
 
         # cleanup env archives
-        in_use = set(env.content_hash for env in self.dag.conda_envs.values())
+        in_use = {env.content_hash for env in self.dag.conda_envs.values()}
         for d in os.listdir(self.conda_env_archive_path):
             if d not in in_use:
                 shutil.rmtree(os.path.join(self.conda_env_archive_path, d))
@@ -338,10 +338,10 @@ class Persistence:
 
     def external_jobids(self, job):
         return list(
-            set(
+            {
                 self._read_record(self._incomplete_path, f).get("external_jobid", None)
                 for f in job.output
-            )
+            }
         )
 
     def metadata(self, path):
@@ -378,10 +378,10 @@ class Persistence:
         """Return all checksums of the given input file
         recorded for the output of the given job.
         """
-        return set(
+        return {
             self.metadata(output_path).get("input_checksums", {}).get(input_path)
             for output_path in job.output
-        )
+        }
 
     def version_changed(self, job, file=None):
         """Yields output files with changed versions or bool if file given."""
@@ -553,7 +553,7 @@ class Persistence:
     def _read_record_uncached(self, subject, id):
         if not self._exists_record(subject, id):
             return dict()
-        with open(self._record_path(subject, id), "r") as f:
+        with open(self._record_path(subject, id)) as f:
             try:
                 return json.load(f)
             except json.JSONDecodeError as e:

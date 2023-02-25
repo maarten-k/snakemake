@@ -39,7 +39,7 @@ class RemoteProvider(AbstractRemoteProvider):
     def __init__(
         self, *args, keep_local=False, stay_on_remote=False, is_default=False, **kwargs
     ):
-        super(RemoteProvider, self).__init__(
+        super().__init__(
             *args,
             keep_local=keep_local,
             stay_on_remote=stay_on_remote,
@@ -65,9 +65,7 @@ class RemoteProvider(AbstractRemoteProvider):
 
 class RemoteObject(AbstractRemoteRetryObject):
     def __init__(self, *args, keep_local=False, provider=None, **kwargs):
-        super(RemoteObject, self).__init__(
-            *args, keep_local=keep_local, provider=provider, **kwargs
-        )
+        super().__init__(*args, keep_local=keep_local, provider=provider, **kwargs)
 
         if provider:
             self._as = provider.remote_interface()
@@ -163,7 +161,7 @@ class RemoteObject(AbstractRemoteRetryObject):
 # Actual Azure specific functions, adapted from S3.py
 
 
-class AzureStorageHelper(object):
+class AzureStorageHelper:
     def __init__(self, *args, **kwargs):
         if "stay_on_remote" in kwargs:
             del kwargs["stay_on_remote"]

@@ -36,7 +36,7 @@ class RemoteProvider(AbstractRemoteProvider):
         email=None,
         **kwargs
     ):
-        super(RemoteProvider, self).__init__(
+        super().__init__(
             *args,
             keep_local=keep_local,
             stay_on_remote=stay_on_remote,
@@ -84,7 +84,7 @@ class RemoteObject(AbstractRemoteObject):
         retmode=None,
         **kwargs
     ):
-        super(RemoteObject, self).__init__(
+        super().__init__(
             *args,
             keep_local=keep_local,
             stay_on_remote=stay_on_remote,
@@ -182,7 +182,7 @@ class RemoteObject(AbstractRemoteObject):
         return version
 
 
-class NCBIHelper(object):
+class NCBIHelper:
     def __init__(self, *args, email=None, **kwargs):
         if not email:
             raise NCBIFileException(
@@ -335,7 +335,7 @@ class NCBIHelper(object):
         extensions = set()
         for db, db_options in self.efetch_options.items():
             for options in db_options:
-                extensions |= set([options["ext"]])
+                extensions |= {options["ext"]}
         return list(extensions)
 
     def dbs_for_options(self, file_ext, rettype=None, retmode=None):
@@ -347,7 +347,7 @@ class NCBIHelper(object):
                         continue
                     if rettype and option_dict["rettype"] != rettype:
                         continue
-                    possible_dbs |= set([db])
+                    possible_dbs |= {db}
                     break
         return possible_dbs
 
@@ -622,7 +622,7 @@ class NCBIHelper(object):
                         for line in handle:
                             outf.write(line)
                     output_files.append(output_file_path)
-                except IOError:
+                except OSError:
                     logger.warning(
                         "Error fetching file {}: {}, try #{} probably because NCBI is too busy.".format(
                             chunk_num + 1, acc_string, try_count
@@ -713,8 +713,7 @@ class NCBIHelper(object):
                 term=query, *args, db=db, idtype=idtype, **kwargs
             )
 
-            for acc in result_ids(json_results):
-                yield acc
+            yield from result_ids(json_results)
 
             if return_all and (
                 "count" in json_results["esearchresult"]

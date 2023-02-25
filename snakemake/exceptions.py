@@ -208,7 +208,7 @@ class RuleException(Exception):
         lineno -- the line the exception originates
         snakefile -- the file the exception originates
         """
-        super(RuleException, self).__init__(message)
+        super().__init__(message)
         self._include = set()
         if include:
             for ex in include:

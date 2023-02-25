@@ -353,7 +353,7 @@ class Env:
 
         # Determine interpreter from shebang or use sh as default.
         interpreter = "sh"
-        with open(deploy_file, "r") as f:
+        with open(deploy_file) as f:
             first_line = next(iter(f))
             if first_line.startswith("#!"):
                 interpreter = first_line[2:].strip()
@@ -760,7 +760,7 @@ class Conda:
         version = shell.check_output(
             self._get_cmd("conda --version"), stderr=subprocess.PIPE, text=True
         )
-        version_matches = re.findall("\d+.\d+.\d+", version)
+        version_matches = re.findall(r"\d+.\d+.\d+", version)
         if len(version_matches) != 1:
             raise WorkflowError(
                 f"Unable to determine conda version. 'conda --version' returned {version}"

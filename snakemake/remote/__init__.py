@@ -301,7 +301,7 @@ class DomainObject(AbstractRemoteRetryObject):
     """
 
     def __init__(self, *args, **kwargs):
-        super(DomainObject, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     @property
     def _matched_address(self):
@@ -358,7 +358,7 @@ class PooledDomainObject(DomainObject):
     connection_pools = {}
 
     def __init__(self, *args, pool_size=100, immediate_close=False, **kwargs):
-        super(PooledDomainObject, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.pool_size = 100
         self.immediate_close = immediate_close
 

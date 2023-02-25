@@ -83,7 +83,7 @@ class RemoteProvider(S3RemoteProvider):
     supports_default = True
 
     def __init__(self, *args, **kwargs):
-        super(RemoteProvider, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
 
 @dec_all_methods(pickled_moto_wrapper, prefix=None)
@@ -98,7 +98,7 @@ class RemoteObject(S3RemoteObject):
     def __init__(
         self, *args, keep_local=False, stay_on_remote=False, provider=None, **kwargs
     ):
-        super(RemoteObject, self).__init__(
+        super().__init__(
             *args,
             keep_local=keep_local,
             stay_on_remote=False,

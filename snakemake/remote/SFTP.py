@@ -33,7 +33,7 @@ class RemoteProvider(AbstractRemoteProvider):
         mkdir_remote=True,
         **kwargs
     ):
-        super(RemoteProvider, self).__init__(
+        super().__init__(
             *args,
             keep_local=keep_local,
             stay_on_remote=stay_on_remote,
@@ -58,9 +58,7 @@ class RemoteObject(PooledDomainObject):
     """This is a class to interact with an SFTP server."""
 
     def __init__(self, *args, keep_local=False, provider=None, **kwargs):
-        super(RemoteObject, self).__init__(
-            *args, keep_local=keep_local, provider=provider, **kwargs
-        )
+        super().__init__(*args, keep_local=keep_local, provider=provider, **kwargs)
 
     def get_default_kwargs(self, **defaults):
         """define defaults beyond those set in PooledDomainObject"""
@@ -151,7 +149,7 @@ class RemoteObject(PooledDomainObject):
             for part in list_remote_dir:
                 try:
                     sftpc.chdir(part)
-                except IOError:
+                except OSError:
                     sftpc.mkdir(part)
                     sftpc.chdir(part)
 

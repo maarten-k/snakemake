@@ -67,7 +67,7 @@ class SnakefileLinter(Linter):
     def lint_envvars(
         self,
         snakefile,
-        regex=re.compile("os.environ\[(?P<quote>['\"])(?P<name>.+)?(?P=quote)\]"),
+        regex=re.compile("os.environ\\[(?P<quote>['\"])(?P<name>.+)?(?P=quote)\\]"),
     ):
         for match in regex.finditer(snakefile):
             line = get_line(match, snakefile)

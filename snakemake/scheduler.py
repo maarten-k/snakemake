@@ -846,9 +846,9 @@ class JobScheduler:
             )
             return self.job_selector_greedy(jobs)
 
-        selected_jobs = set(
+        selected_jobs = {
             job for job, variable in scheduled_jobs.items() if variable.value() == 1.0
-        )
+        }
 
         if not selected_jobs:
             # No selected jobs. This could be due to insufficient resources or a failure in the ILP solver
@@ -949,7 +949,7 @@ class JobScheduler:
                 if not E:
                     break
 
-            solution = set(job for job, sel in zip(jobs, x) if sel)
+            solution = {job for job, sel in zip(jobs, x) if sel}
             # update resources
             for name, b_i in zip(self.global_resources, b):
                 self.resources[name] = b_i

@@ -277,7 +277,7 @@ class GoogleLifeSciencesExecutor(ClusterExecutor):
                 return
 
         # If we get here, choose based on prefix
-        prefixes = set([r.split("-")[0] for r in self.regions])
+        prefixes = {r.split("-")[0] for r in self.regions}
         regexp = "^(%s)" % "|".join(prefixes)
         for location in locations:
             if re.search(regexp, location):
@@ -773,7 +773,7 @@ class GoogleLifeSciencesExecutor(ClusterExecutor):
 
     def _get_jobname(self, job):
         # Use a dummy job name (human readable and also namespaced)
-        return "snakejob-%s-%s-%s" % (self.run_namespace, job.name, job.jobid)
+        return "snakejob-{}-{}-{}".format(self.run_namespace, job.name, job.jobid)
 
     def _generate_pipeline_labels(self, job):
         """

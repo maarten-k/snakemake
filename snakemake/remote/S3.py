@@ -38,7 +38,7 @@ class RemoteProvider(
     def __init__(
         self, *args, keep_local=False, stay_on_remote=False, is_default=False, **kwargs
     ):
-        super(RemoteProvider, self).__init__(
+        super().__init__(
             *args,
             keep_local=keep_local,
             stay_on_remote=stay_on_remote,
@@ -66,9 +66,7 @@ class RemoteObject(AbstractRemoteRetryObject):
     """This is a class to interact with the AWS S3 object store."""
 
     def __init__(self, *args, keep_local=False, provider=None, **kwargs):
-        super(RemoteObject, self).__init__(
-            *args, keep_local=keep_local, provider=provider, **kwargs
-        )
+        super().__init__(*args, keep_local=keep_local, provider=provider, **kwargs)
 
         if provider:
             self._s3c = provider.remote_interface()
@@ -151,7 +149,7 @@ class RemoteObject(AbstractRemoteRetryObject):
             )
 
 
-class S3Helper(object):
+class S3Helper:
     def __init__(self, *args, **kwargs):
         # as per boto, expects the environment variables to be set:
         # AWS_ACCESS_KEY_ID
@@ -293,7 +291,7 @@ class S3Helper(object):
             return destination_path
         except:
             raise S3FileException(
-                "Error downloading file '%s' from bucket '%s'." % (key, bucket_name)
+                "Error downloading file '{}' from bucket '{}'.".format(key, bucket_name)
             )
 
     def delete_from_bucket(self, bucket_name, key):

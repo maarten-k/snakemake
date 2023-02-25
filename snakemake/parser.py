@@ -19,7 +19,7 @@ dd = textwrap.dedent
 INDENT = "\t"
 
 
-def is_newline(token, newline_tokens=set((tokenize.NEWLINE, tokenize.NL))):
+def is_newline(token, newline_tokens={tokenize.NEWLINE, tokenize.NL}):
     return token.type in newline_tokens
 
 
@@ -384,8 +384,7 @@ class Subworkflow(GlobalKeywordState):
                     self.has_snakefile = True
                 if token.string == "workdir":
                     self.has_workdir = True
-                for t in self.subautomaton(token.string).consume():
-                    yield t
+                yield from self.subautomaton(token.string).consume()
             except KeyError:
                 self.error(
                     "Unexpected keyword {} in "
@@ -394,8 +393,7 @@ class Subworkflow(GlobalKeywordState):
                 )
             except StopAutomaton as e:
                 self.indentation(e.token)
-                for t in self.block(e.token):
-                    yield t
+                yield from self.block(e.token)
         elif is_comment(token):
             yield "\n", token
             yield token.string, token
@@ -591,8 +589,7 @@ class AbstractCmd(Run):
         yield "\n"
         yield ")"
         yield "\n"
-        for t in super().start():
-            yield t
+        yield from super().start()
         yield "\n"
         yield INDENT * (self.effective_indent + 1)
         yield self.end_func
@@ -601,8 +598,7 @@ class AbstractCmd(Run):
         yield from self.args()
         yield "\n"
         yield ")"
-        for t in super().end():
-            yield t
+        yield from super().end()
 
     def decorate_end(self, token):
         if self.token is None:
@@ -753,8 +749,7 @@ class Rule(GlobalKeywordState):
         if not self.run:
             yield "@workflow.norun()"
             yield "\n"
-            for t in self.subautomaton("run", rulename=self.rulename).start():
-                yield t
+            yield from self.subautomaton("run", rulename=self.rulename).start()
             # the end is detected.
             # So we can savely reset the indent to zero here
             self.indent = 0
@@ -802,10 +797,9 @@ class Rule(GlobalKeywordState):
                         "rule {}.".format(self.rulename),
                         token,
                     )
-                for t in self.subautomaton(
+                yield from self.subautomaton(
                     token.string, rulename=self.rulename
-                ).consume():
-                    yield t
+                ).consume()
             except KeyError:
                 self.error(
                     "Unexpected keyword {} in rule definition".format(token.string),
@@ -813,8 +807,7 @@ class Rule(GlobalKeywordState):
                 )
             except StopAutomaton as e:
                 self.indentation(e.token)
-                for t in self.block(e.token):
-                    yield t
+                yield from self.block(e.token)
         elif is_comment(token):
             yield "\n", token
             yield token.string, token
@@ -933,8 +926,7 @@ class Module(GlobalKeywordState):
                     self.has_snakefile = True
                 if token.string == "meta_wrapper":
                     self.has_meta_wrapper = True
-                for t in self.subautomaton(token.string).consume():
-                    yield t
+                yield from self.subautomaton(token.string).consume()
             except KeyError:
                 self.error(
                     "Unexpected keyword {} in "
@@ -943,8 +935,7 @@ class Module(GlobalKeywordState):
                 )
             except StopAutomaton as e:
                 self.indentation(e.token)
-                for t in self.block(e.token):
-                    yield t
+                yield from self.block(e.token)
         elif is_comment(token):
             yield "\n", token
             yield token.string, token
@@ -1234,14 +1225,12 @@ class Python(TokenAutomaton):
         if not (is_indent(token) or is_dedent(token)):
             if self.lasttoken is None or self.lasttoken.isspace():
                 try:
-                    for t in self.subautomaton(token.string).consume():
-                        yield t
+                    yield from self.subautomaton(token.string).consume()
                 except KeyError:
                     yield token.string, token
                 except StopAutomaton as e:
                     self.indentation(e.token)
-                    for t in self.python(e.token):
-                        yield t
+                    yield from self.python(e.token)
             else:
                 yield token.string, token
 
@@ -1285,12 +1274,12 @@ def parse(path, workflow, overwrite_shellcmd=None, rulecount=0):
         for t, orig_token in automaton.consume():
             l = lineno(orig_token)
             linemap.update(
-                dict(
-                    (i, l)
+                {
+                    i: l
                     for i in range(
                         snakefile.lines + 1, snakefile.lines + t.count("\n") + 1
                     )
-                )
+                }
             )
             snakefile.lines += t.count("\n")
             compilation.append(t)

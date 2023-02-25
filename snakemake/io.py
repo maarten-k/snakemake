@@ -878,7 +878,7 @@ def wait_for_files(
                 return
             time.sleep(1)
         missing = "\n".join(get_missing())
-        raise IOError(
+        raise OSError(
             f"Missing files after {latency_wait} seconds. This might be due to "
             "filesystem latency. If that is the case, consider to increase the "
             "wait time with --latency-wait:\n"
@@ -887,7 +887,7 @@ def wait_for_files(
 
 
 def get_wildcard_names(pattern):
-    return set(match.group("name") for match in _wildcard_regex.finditer(pattern))
+    return {match.group("name") for match in _wildcard_regex.finditer(pattern)}
 
 
 def contains_wildcard(path):
@@ -1567,8 +1567,7 @@ class Namedlist(list):
         """
         Get the defined names as (name, index) pairs.
         """
-        for name, index in self._names.items():
-            yield name, index
+        yield from self._names.items()
 
     def _take_names(self, names):
         """

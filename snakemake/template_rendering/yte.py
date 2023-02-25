@@ -8,7 +8,7 @@ class YteRenderer(TemplateRenderer):
 
         try:
             with open(self.output_file, "w") as outfile, open(
-                self.input_file, "r"
+                self.input_file
             ) as infile:
                 yte.process_yaml(infile, outfile=outfile, variables=self.variables)
         except Exception as e:

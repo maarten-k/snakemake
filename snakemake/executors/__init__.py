@@ -250,7 +250,7 @@ class RealExecutor(AbstractExecutor):
 
         try:
             self.register_job(job)
-        except IOError as e:
+        except OSError as e:
             logger.info(
                 "Failed to set marker file for job started ({}). "
                 "Snakemake will work, but cannot ensure that output files "
@@ -742,7 +742,7 @@ class ClusterExecutor(RealExecutor):
         try:
             with open(jobscript) as f:
                 self.jobscript = f.read()
-        except IOError as e:
+        except OSError as e:
             raise WorkflowError(e)
 
         if not "jobid" in get_wildcard_names(jobname):
@@ -2338,9 +2338,9 @@ class TibannaExecutor(ClusterExecutor):
         # jobid, grouping, run_name
         jobid = tibanna_core.create_jobid()
         if job.is_group():
-            run_name = "snakemake-job-%s-group-%s" % (str(jobid), str(job.groupid))
+            run_name = "snakemake-job-{}-group-{}".format(str(jobid), str(job.groupid))
         else:
-            run_name = "snakemake-job-%s-rule-%s" % (str(jobid), str(job.rule))
+            run_name = "snakemake-job-{}-rule-{}".format(str(jobid), str(job.rule))
 
         # tibanna input
         tibanna_config = {
@@ -2421,7 +2421,7 @@ class TibannaExecutor(ClusterExecutor):
                     else:
                         status = "FAILED_AT_SUBMISSION"
                     if not self.quiet or status != "RUNNING":
-                        logger.debug("job %s: %s" % (j.jobname, status))
+                        logger.debug("job {}: {}".format(j.jobname, status))
                     if status == "RUNNING":
                         still_running.append(j)
                     elif status == "SUCCEEDED":

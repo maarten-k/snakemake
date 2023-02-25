@@ -165,11 +165,11 @@ class DAG:
         if forcefiles:
             self.forcefiles.update(forcefiles)
         if untilrules:
-            self.untilrules.update(set(rule.name for rule in untilrules))
+            self.untilrules.update({rule.name for rule in untilrules})
         if untilfiles:
             self.untilfiles.update(untilfiles)
         if omitrules:
-            self.omitrules.update(set(rule.name for rule in omitrules))
+            self.omitrules.update({rule.name for rule in omitrules})
         if omitfiles:
             self.omitfiles.update(omitfiles)
 
@@ -260,9 +260,9 @@ class DAG:
                 yield job
 
     def update_checkpoint_outputs(self):
-        workflow.checkpoints.future_output = set(
+        workflow.checkpoints.future_output = {
             f for job in self.checkpoint_jobs for f in job.output
-        )
+        }
 
     def update_jobids(self):
         for job in self.jobs:
@@ -272,11 +272,11 @@ class DAG:
     def cleanup_workdir(self):
         for job in self.jobs:
             if not self.is_edit_notebook_job(job):
-                for io_dir in set(
+                for io_dir in {
                     os.path.dirname(io_file)
                     for io_file in chain(job.output, job.input)
                     if not os.path.exists(io_file)
-                ):
+                }:
                     if os.path.exists(io_dir):
                         # check for empty dir
                         with os.scandir(io_dir) as i:
@@ -590,7 +590,7 @@ class DAG:
                     force_stay_on_remote=force_stay_on_remote,
                     ignore_pipe_or_service=True,
                 )
-            except IOError as e:
+            except OSError as e:
                 raise MissingOutputException(
                     str(e),
                     rule=job.rule,
@@ -689,8 +689,7 @@ class DAG:
 
     def temp_input(self, job):
         for job_, files in self.dependencies[job].items():
-            for f in filter(job_.temp_output.__contains__, files):
-                yield f
+            yield from filter(job_.temp_output.__contains__, files)
 
     def temp_size(self, job):
         """Return the total size of temporary input files of the job.
@@ -720,7 +719,7 @@ class DAG:
         def unneeded_files():
             # temp input
             for job_, files in self.dependencies[job].items():
-                tempfiles = set(f for f in job_.expanded_output if is_temp(f))
+                tempfiles = {f for f in job_.expanded_output if is_temp(f)}
                 yield from filterfalse(partial(needed, job_), tempfiles & files)
 
             # temp output
@@ -1208,7 +1207,7 @@ class DAG:
 
         # bi-directional BFS to determine further needrun jobs
         visited = set(queue)
-        candidates_set = set(job for level in candidates for job in level)
+        candidates_set = {job for level in candidates for job in level}
         while queue:
             job = queue.popleft()
             _needrun.add(job)
@@ -1928,14 +1927,12 @@ class DAG:
             for job_ in direction[job]:
                 if not job_ in visited:
                     visited.add(job_)
-                    for j in _dfs(job_):
-                        yield j
+                    yield from _dfs(job_)
             if post:
                 yield job
 
         for job in jobs:
-            for job_ in self._dfs(direction, job, visited, stop=stop, post=post):
-                yield job_
+            yield from self._dfs(direction, job, visited, stop=stop, post=post)
 
     def new_wildcards(self, job):
         """Return wildcards that are newly introduced in this job,
@@ -2506,9 +2503,9 @@ class DAG:
             # Then, for each pipe_group, we find the dependencies of every job in the
             # group, filtering out any dependencies that are, themselves, in the group
             for name, group in pipe_groups.items():
-                pipe_dependencies[name] = set(
+                pipe_dependencies[name] = {
                     d for job in group for d in self.dependencies[job] if d not in group
-                )
+                }
 
         # Collect every job's dependencies into a definitive mapping
         dependencies = {}

@@ -618,9 +618,9 @@ class Job(AbstractJob):
     def missing_input(self):
         """Return missing input files."""
         # omit file if it comes from a subworkflow
-        return set(
+        return {
             f for f in self.input if not f.exists and not f in self.subworkflow_input
-        )
+        }
 
     @property
     def existing_remote_input(self):
@@ -865,14 +865,12 @@ class Job(AbstractJob):
             or self.rule.shadow_depth == "copy-minimal"
         ):
             # Re-create the directory structure in the shadow directory
-            for f, d in set(
-                [
-                    (item, os.path.dirname(item))
-                    for sublist in [self.input, self.output, self.log]
-                    if sublist is not None
-                    for item in sublist
-                ]
-            ):
+            for f, d in {
+                (item, os.path.dirname(item))
+                for sublist in [self.input, self.output, self.log]
+                if sublist is not None
+                for item in sublist
+            }:
                 if d and not os.path.isabs(d):
                     rel_path = os.path.relpath(d)
                     # Only create subdirectories
@@ -891,15 +889,15 @@ class Job(AbstractJob):
 
             # Symlink or copy the input files
             if self.rule.shadow_depth == "copy-minimal":
-                for rel_path in set(
-                    [os.path.relpath(f) for f in self.input if not os.path.isabs(f)]
-                ):
+                for rel_path in {
+                    os.path.relpath(f) for f in self.input if not os.path.isabs(f)
+                }:
                     copy = os.path.join(self.shadow_dir, rel_path)
                     shutil.copy(rel_path, copy)
             else:
-                for rel_path in set(
-                    [os.path.relpath(f) for f in self.input if not os.path.isabs(f)]
-                ):
+                for rel_path in {
+                    os.path.relpath(f) for f in self.input if not os.path.isabs(f)
+                }:
                     link = os.path.join(self.shadow_dir, rel_path)
                     original = os.path.relpath(rel_path, os.path.dirname(link))
                     os.symlink(original, link)
@@ -1167,7 +1165,7 @@ class Job(AbstractJob):
                 self.dag.workflow.persistence.finished(
                     self, keep_metadata=keep_metadata
                 )
-            except IOError as e:
+            except OSError as e:
                 raise WorkflowError(
                     "Error recording metadata for finished job "
                     "({}). Please ensure write permissions for the "
@@ -1295,7 +1293,7 @@ class GroupJob(AbstractJob):
     @property
     def all_products(self):
         if self._all_products is None:
-            self._all_products = set(f for job in self.jobs for f in job.products())
+            self._all_products = {f for job in self.jobs for f in job.products()}
         return self._all_products
 
     @property
@@ -1400,7 +1398,7 @@ class GroupJob(AbstractJob):
 
     @property
     def output(self):
-        all_input = set(f for job in self.jobs for f in job.input)
+        all_input = {f for job in self.jobs for f in job.input}
         if self._output is None:
             self._output = [
                 f for job in self.jobs for f in job.output if f not in all_input
@@ -1414,7 +1412,7 @@ class GroupJob(AbstractJob):
         return self._log
 
     def products(self, include_logfiles=True):
-        all_input = set(f for job in self.jobs for f in job.input)
+        all_input = {f for job in self.jobs for f in job.input}
         return [
             f
             for job in self.jobs

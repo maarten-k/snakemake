@@ -58,7 +58,7 @@ from snakemake.report import data
 from snakemake.report.rulegraph_spec import rulegraph_spec
 
 
-class EmbeddedMixin(object):
+class EmbeddedMixin:
     """
     Replaces the URI of a directive with a base64-encoded version.
 

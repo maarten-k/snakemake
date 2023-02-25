@@ -24,9 +24,7 @@ ZenFileInfo = namedtuple(
 
 class RemoteProvider(AbstractRemoteProvider):
     def __init__(self, *args, stay_on_remote=False, **kwargs):
-        super(RemoteProvider, self).__init__(
-            *args, stay_on_remote=stay_on_remote, **kwargs
-        )
+        super().__init__(*args, stay_on_remote=stay_on_remote, **kwargs)
         self._zen = ZENHelper(*args, **kwargs)
 
     def remote_interface(self):
@@ -45,7 +43,7 @@ class RemoteObject(AbstractRemoteRetryObject):
     def __init__(
         self, *args, keep_local=False, stay_on_remote=False, provider=None, **kwargs
     ):
-        super(RemoteObject, self).__init__(
+        super().__init__(
             *args,
             keep_local=keep_local,
             stay_on_remote=stay_on_remote,
@@ -111,7 +109,7 @@ class RemoteObject(AbstractRemoteRetryObject):
         return self.local_file()
 
 
-class ZENHelper(object):
+class ZENHelper:
     def __init__(self, *args, **kwargs):
         try:
             self._access_token = kwargs.pop("access_token")

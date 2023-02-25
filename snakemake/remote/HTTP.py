@@ -31,7 +31,7 @@ class RemoteProvider(AbstractRemoteProvider):
     def __init__(
         self, *args, keep_local=False, stay_on_remote=False, is_default=False, **kwargs
     ):
-        super(RemoteProvider, self).__init__(
+        super().__init__(
             *args,
             keep_local=keep_local,
             stay_on_remote=stay_on_remote,
@@ -77,7 +77,7 @@ class RemoteProvider(AbstractRemoteProvider):
                 else:
                     values[i] = "https://" + file
 
-        return super(RemoteProvider, self).remote(values, *args, **kwargs)
+        return super().remote(values, *args, **kwargs)
 
 
 class RemoteObject(DomainObject):
@@ -92,7 +92,7 @@ class RemoteObject(DomainObject):
         allow_redirects=True,
         **kwargs
     ):
-        super(RemoteObject, self).__init__(
+        super().__init__(
             *args,
             keep_local=keep_local,
             provider=provider,

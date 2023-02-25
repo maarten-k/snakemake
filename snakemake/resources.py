@@ -136,7 +136,7 @@ class ResourceScopes(UserDict):
         -------
         set
         """
-        return set(res for res, scope in self.data.items() if scope == "local")
+        return {res for res, scope in self.data.items() if scope == "local"}
 
     @property
     def globals(self):
@@ -146,7 +146,7 @@ class ResourceScopes(UserDict):
         -------
         set
         """
-        return set(res for res, scope in self.data.items() if scope == "global")
+        return {res for res, scope in self.data.items() if scope == "global"}
 
     @property
     def excluded(self):
@@ -161,7 +161,7 @@ class ResourceScopes(UserDict):
         -------
         set
         """
-        return set(res for res, scope in self.data.items() if scope == "excluded")
+        return {res for res, scope in self.data.items() if scope == "excluded"}
 
 
 class GroupResources:
