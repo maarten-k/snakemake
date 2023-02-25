@@ -752,8 +752,8 @@ class ClusterExecutor(RealExecutor):
 
         self.jobname = jobname
         self._tmpdir = None
-        self.cores = cores if cores else "all"
-        self.cluster_config = cluster_config if cluster_config else {}
+        self.cores = cores or "all"
+        self.cluster_config = cluster_config or {}
 
         self.restart_times = restart_times
 

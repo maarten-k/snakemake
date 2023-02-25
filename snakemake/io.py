@@ -953,7 +953,7 @@ def regex(filepattern):
             f.append(
                 "(?P<{}>{})".format(
                     wildcard,
-                    match.group("constraint") if match.group("constraint") else ".+",
+                    match.group("constraint") or ".+",
                 )
             )
         last = match.end()
