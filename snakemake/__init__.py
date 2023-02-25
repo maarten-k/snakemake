@@ -436,7 +436,7 @@ def snakemake(
         )
 
     if updated_files is None:
-        updated_files = list()
+        updated_files = []
 
     if isinstance(cluster_config, str):
         # Loading configuration from one file is still supported for

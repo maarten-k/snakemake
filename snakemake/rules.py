@@ -1301,7 +1301,7 @@ class Rule:
 
 class Ruleorder:
     def __init__(self):
-        self.order = list()
+        self.order = []
 
     def add(self, *rulenames):
         """

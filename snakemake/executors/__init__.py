@@ -757,7 +757,7 @@ class ClusterExecutor(RealExecutor):
 
         self.restart_times = restart_times
 
-        self.active_jobs = list()
+        self.active_jobs = []
         self.lock = threading.Lock()
         self.wait = True
         self.wait_thread = threading.Thread(target=self._wait_thread)
@@ -1009,7 +1009,7 @@ class GenericClusterExecutor(ClusterExecutor):
         self.external_jobid = dict()
         # We need to collect all external ids so we can properly cancel even if
         # the status update queue is running.
-        self.all_ext_jobids = list()
+        self.all_ext_jobids = []
 
         super().__init__(
             workflow,
@@ -1318,8 +1318,8 @@ class GenericClusterExecutor(ClusterExecutor):
                 if not self.wait:
                     return
                 active_jobs = self.active_jobs
-                self.active_jobs = list()
-                still_running = list()
+                self.active_jobs = []
+                still_running = []
             # logger.debug("Checking status of {} jobs.".format(len(active_jobs)))
             for active_job in active_jobs:
                 async with self.status_rate_limiter:
@@ -1436,8 +1436,8 @@ class SynchronousClusterExecutor(ClusterExecutor):
                 if not self.wait:
                     return
                 active_jobs = self.active_jobs
-                self.active_jobs = list()
-                still_running = list()
+                self.active_jobs = []
+                still_running = []
             for active_job in active_jobs:
                 async with self.status_rate_limiter:
                     exitcode = active_job.process.poll()
@@ -1511,7 +1511,7 @@ class DRMAAExecutor(ClusterExecutor):
         self.drmaa_args = drmaa_args
         self.drmaa_log_dir = drmaa_log_dir
         self.session.initialize()
-        self.submitted = list()
+        self.submitted = []
 
     def get_job_exec_prefix(self, job):
         if self.assume_shared_fs:
@@ -1595,8 +1595,8 @@ class DRMAAExecutor(ClusterExecutor):
                 if not self.wait:
                     return
                 active_jobs = self.active_jobs
-                self.active_jobs = list()
-                still_running = list()
+                self.active_jobs = []
+                still_running = []
             for active_job in active_jobs:
                 async with self.status_rate_limiter:
                     try:
@@ -2067,8 +2067,8 @@ class KubernetesExecutor(ClusterExecutor):
                 if not self.wait:
                     return
                 active_jobs = self.active_jobs
-                self.active_jobs = list()
-                still_running = list()
+                self.active_jobs = []
+                still_running = []
             for j in active_jobs:
                 async with self.status_rate_limiter:
                     logger.debug("Checking status for pod {}".format(j.jobid))
@@ -2411,8 +2411,8 @@ class TibannaExecutor(ClusterExecutor):
                 if not self.wait:
                     return
                 active_jobs = self.active_jobs
-                self.active_jobs = list()
-                still_running = list()
+                self.active_jobs = []
+                still_running = []
             for j in active_jobs:
                 # use self.status_rate_limiter to avoid too many API calls.
                 async with self.status_rate_limiter:

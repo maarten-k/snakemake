@@ -361,8 +361,8 @@ class SlurmExecutor(ClusterExecutor):
                 if not self.wait:
                     return
                 active_jobs = self.active_jobs
-                self.active_jobs = list()
-                still_running = list()
+                self.active_jobs = []
+                still_running = []
             for j in active_jobs:
                 status = await self.job_status(j.jobid)
                 if status == "COMPLETED":

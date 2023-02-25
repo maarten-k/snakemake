@@ -963,8 +963,8 @@ class GoogleLifeSciencesExecutor(ClusterExecutor):
                 if not self.wait:
                     return
                 active_jobs = self.active_jobs
-                self.active_jobs = list()
-                still_running = list()
+                self.active_jobs = []
+                still_running = []
 
             # Loop through active jobs and act on status
             for j in active_jobs:

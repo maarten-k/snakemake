@@ -126,8 +126,8 @@ class TaskExecutionServiceExecutor(ClusterExecutor):
                 if not self.wait:
                     return
                 active_jobs = self.active_jobs
-                self.active_jobs = list()
-                still_running = list()
+                self.active_jobs = []
+                still_running = []
 
             for j in active_jobs:
                 async with self.status_rate_limiter:  # TODO: this doesn't seem to do anything?

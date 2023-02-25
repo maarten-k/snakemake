@@ -194,7 +194,7 @@ class GlobalKeywordState(KeywordState):
 
 class DecoratorKeywordState(KeywordState):
     decorator = None
-    args = list()
+    args = []
 
     def start(self):
         yield "@workflow.{}".format(self.decorator)
@@ -221,7 +221,7 @@ class SectionKeywordState(KeywordState):
 
     def end(self):
         # no end needed
-        return list()
+        return []
 
 
 # Global keyword states
@@ -567,7 +567,7 @@ class AbstractCmd(Run):
         super().__init__(
             snakefile, rulename, base_indent=base_indent, dedent=dedent, root=root
         )
-        self.cmd = list()
+        self.cmd = []
         self.token = None
         if self.overwrite_cmd is not None:
             self.block_content = self.overwrite_block_content
@@ -1270,7 +1270,7 @@ def parse(path, workflow, overwrite_shellcmd=None, rulecount=0):
     with Snakefile(path, workflow, rulecount=rulecount) as snakefile:
         automaton = Python(snakefile)
         linemap = dict()
-        compilation = list()
+        compilation = []
         for t, orig_token in automaton.consume():
             l = lineno(orig_token)
             linemap.update(

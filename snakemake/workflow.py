@@ -610,17 +610,17 @@ class Workflow:
 
         if not targets and not target_jobs:
             targets = (
-                [self.default_target] if self.default_target is not None else list()
+                [self.default_target] if self.default_target is not None else []
             )
 
         if prioritytargets is None:
-            prioritytargets = list()
+            prioritytargets = []
         if forcerun is None:
-            forcerun = list()
+            forcerun = []
         if until is None:
-            until = list()
+            until = []
         if omit_from is None:
-            omit_from = list()
+            omit_from = []
 
         priorityrules = set(rules(prioritytargets))
         priorityfiles = set(files(prioritytargets))
@@ -775,7 +775,7 @@ class Workflow:
                         "\n    ".join(subworkflow_targets)
                     )
                 )
-                updated = list()
+                updated = []
                 if subworkflow_targets:
                     logger.info("Executing subworkflow {}.".format(subworkflow.name))
                     if not subsnakemake(

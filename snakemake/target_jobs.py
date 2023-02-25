@@ -10,7 +10,7 @@ TargetSpec = namedtuple("TargetSpec", ["rulename", "wildcards_dict"])
 def parse_target_jobs_cli_args(args):
     errmsg = "Invalid target wildcards definition: entries have to be defined as WILDCARD=VALUE pairs"
     if args.target_jobs is not None:
-        target_jobs = list()
+        target_jobs = []
         for entry in args.target_jobs:
             rulename, wildcards = entry.split(":", 1)
             if wildcards:

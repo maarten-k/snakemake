@@ -1715,7 +1715,7 @@ class Reason:
         def format_files(files):
             return ", ".join(map(format_file, files))
 
-        s = list()
+        s = []
         if self.forced:
             s.append("Forced execution")
         else:

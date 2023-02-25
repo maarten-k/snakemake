@@ -841,8 +841,8 @@ class DAG:
         if known_producers is None:
             known_producers = dict()
         producers = []
-        exceptions = list()
-        cycles = list()
+        exceptions = []
+        cycles = []
 
         # check if all potential producers are strictly ordered
         jobs = sorted(jobs, reverse=True)
@@ -1959,7 +1959,7 @@ class DAG:
     def file2jobs(self, targetfile, wildcards_dict=None):
         rules = self.output_index.match(targetfile)
         jobs = []
-        exceptions = list()
+        exceptions = []
         for rule in rules:
             if rule.is_producer(targetfile):
                 try:
