@@ -773,9 +773,15 @@ class Rule(GlobalKeywordState):
     def block_content(self, token):
         if is_name(token):
             try:
-                if (
-                    token.string in {"run","shell","script","wrapper","notebook","template_engine","cwl"}
-                ):
+                if token.string in {
+                    "run",
+                    "shell",
+                    "script",
+                    "wrapper",
+                    "notebook",
+                    "template_engine",
+                    "cwl",
+                }:
                     if self.run:
                         raise self.error(
                             "Multiple run or shell keywords in rule {}.".format(
@@ -1026,7 +1032,7 @@ class UseRule(GlobalKeywordState):
 
     def state_rules_comma_or_end(self, token):
         if is_name(token):
-            if token.string in {"from","as"}:
+            if token.string in {"from", "as"}:
                 if not self.rules:
                     self.error(
                         "Expecting rule names after 'use rule' statement.", token
@@ -1136,7 +1142,7 @@ class UseRule(GlobalKeywordState):
 
     def state_exclude_comma_or_end(self, token):
         if is_name(token):
-            if token.string in {"from","as"}:
+            if token.string in {"from", "as"}:
                 if not self.exclude_rules:
                     self.error(
                         "Expecting rule names after 'exclude' statement.",

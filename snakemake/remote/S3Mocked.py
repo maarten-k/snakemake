@@ -5,7 +5,7 @@ __license__ = "MIT"
 
 # built-ins
 import os, sys
-from contextlib import contextmanager
+from contextlib import contextmanager, suppress
 import pickle
 import time
 import threading
@@ -145,7 +145,5 @@ def file_lock(filepath):
     try:
         yield
     finally:
-        try:
+        with suppress(OSError):
             os.remove(lock_file)
-        except OSError:
-            pass

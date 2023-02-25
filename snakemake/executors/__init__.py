@@ -23,6 +23,7 @@ import tempfile
 from functools import partial
 from itertools import chain
 from collections import namedtuple
+from contextlib import suppress
 import random
 import base64
 import uuid
@@ -644,12 +645,12 @@ class CPUExecutor(RealExecutor):
         Either retrieve result from cache, or run job with given function.
         """
         cache_mode = self.workflow.get_cache_mode(job.rule)
-        try:
-            if cache_mode:
+
+        if cache_mode:
+            with suppress(CacheMissException):
                 self.workflow.output_file_cache.fetch(job, cache_mode)
                 return
-        except CacheMissException:
-            pass
+
         run_func(*args)
         if cache_mode:
             self.workflow.output_file_cache.store(job, cache_mode)
@@ -1524,11 +1525,9 @@ class DRMAAExecutor(ClusterExecutor):
         from drmaa.errors import InvalidJobException, InternalException
 
         for jobid in self.submitted:
-            try:
+            # This is common - logging a warning would probably confuse the user.
+            with suppress(InvalidJobException, InternalException):
                 self.session.control(jobid, JobControlAction.TERMINATE)
-            except (InvalidJobException, InternalException):
-                # This is common - logging a warning would probably confuse the user.
-                pass
         self.shutdown()
 
     def run(self, job, callback=None, submit_callback=None, error_callback=None):
@@ -1641,11 +1640,8 @@ class DRMAAExecutor(ClusterExecutor):
                         elif retval == drmaa.JobState.SYSTEM_SUSPENDED:
                             handle_suspended("system")
                         else:
-                            try:
+                            with suppress(KeyError):
                                 suspended_msg.remove(active_job.job.jobid)
-                            except KeyError:
-                                # there was nothing to remove
-                                pass
 
             async with async_lock(self.lock):
                 self.active_jobs.extend(still_running)
@@ -2210,13 +2206,11 @@ class TibannaExecutor(ClusterExecutor):
         for j in self.active_jobs:
             logger.info("killing job {}".format(j.jobname))
             while True:
-                try:
+                with suppress(KeyboardInterrupt):
                     res = API().kill(j.exec_arn)
                     if not self.quiet:
                         print(res)
                     break
-                except KeyboardInterrupt:
-                    pass
         self.shutdown()
 
     def split_filename(self, filename, checkdir=None):

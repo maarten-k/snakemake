@@ -7,6 +7,8 @@ import os
 import re
 import ftplib
 import collections
+from contextlib import suppress
+
 from itertools import chain
 
 # module-specific
@@ -158,11 +160,10 @@ class RemoteObject(PooledDomainObject):
     def mtime(self):
         if self.exists():
             with self.connection_pool.item() as ftpc:
-                try:
+                with suppress(BaseException):
                     # requires write access
                     ftpc.synchronize_times()
-                except:
-                    pass
+
                 return ftpc.path.getmtime(self.remote_path)
         else:
             raise FTPFileException(
@@ -182,11 +183,9 @@ class RemoteObject(PooledDomainObject):
                 # if the destination path does not exist
                 if make_dest_dirs:
                     os.makedirs(os.path.dirname(self.local_path), exist_ok=True)
-                try:
+                with suppress(BaseException):
                     # requires write access
                     ftpc.synchronize_times()
-                except:
-                    pass
                 ftpc.download(source=self.remote_path, target=self.local_path)
                 os_sync()  # ensure flush to disk
             else:

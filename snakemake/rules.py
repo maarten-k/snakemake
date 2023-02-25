@@ -9,6 +9,8 @@ import re
 import types
 import typing
 from snakemake.path_modifier import PATH_MODIFIER_FLAG
+from contextlib import suppress
+
 import sys
 import inspect
 import sre_constants
@@ -17,6 +19,7 @@ from urllib.parse import urljoin
 from pathlib import Path
 from itertools import chain
 from functools import partial
+
 
 from snakemake.io import (
     IOFile,
@@ -1319,7 +1322,7 @@ class Ruleorder:
             # try the last clause first,
             # i.e. clauses added later overwrite those before.
             for clause in reversed(self.order):
-                try:
+                with suppress(ValueError):
                     i = clause.index(rule1.name)
                     j = clause.index(rule2.name)
                     # rules with higher priority should have a smaller index
@@ -1329,8 +1332,6 @@ class Ruleorder:
                     elif comp > 0:
                         comp = 1
                     return comp
-                except ValueError:
-                    pass
 
         # if no ruleorder given, prefer rule without wildcards
         wildcard_cmp = rule2.has_wildcards() - rule1.has_wildcards()

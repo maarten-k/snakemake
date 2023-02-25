@@ -609,9 +609,7 @@ class Workflow:
                 return map(relpath, filterfalse(self.is_rule, items))
 
         if not targets and not target_jobs:
-            targets = (
-                [self.default_target] if self.default_target is not None else []
-            )
+            targets = [self.default_target] if self.default_target is not None else []
 
         if prioritytargets is None:
             prioritytargets = []

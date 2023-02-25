@@ -8,6 +8,8 @@ import itertools
 import os
 from collections.abc import Iterable
 import typing
+from contextlib import suppress
+
 
 from snakemake import sourcecache
 from snakemake.sourcecache import (
@@ -200,7 +202,7 @@ class REncoder:
             return cls.encode_list(value)
         else:
             # Try to convert from numpy if numpy is present
-            try:
+            with suppress(ImportError):
                 import numpy as np
 
                 if isinstance(value, np.number):
@@ -208,8 +210,6 @@ class REncoder:
                 elif isinstance(value, np.bool_):
                     return "TRUE" if value else "FALSE"
 
-            except ImportError:
-                pass
         raise ValueError("Unsupported value for conversion into R: {}".format(value))
 
     @classmethod
@@ -264,13 +264,11 @@ class JuliaEncoder:
             return cls.encode_list(value)
         else:
             # Try to convert from numpy if numpy is present
-            try:
+            with suppress(ImportError):
                 import numpy as np
 
                 if isinstance(value, np.number):
                     return str(value)
-            except ImportError:
-                pass
         raise ValueError(
             "Unsupported value for conversion into Julia: {}".format(value)
         )

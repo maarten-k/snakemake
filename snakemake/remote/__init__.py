@@ -9,18 +9,18 @@ import sys
 import re
 from functools import partial
 from abc import ABCMeta, abstractmethod
-from contextlib import contextmanager
+from contextlib import contextmanager, suppress
 import shutil
+
 
 from wrapt import ObjectProxy
 from reretry import retry
 
-try:
+# we just won't pool connections if it's not installed
+#  Should there be a warning? Should there be a runtime flag?
+with suppress(ImportError):
     from connection_pool import ConnectionPool
-except ImportError:
-    # we just won't pool connections if it's not installed
-    #  Should there be a warning? Should there be a runtime flag?
-    pass
+
 import copy
 import collections
 

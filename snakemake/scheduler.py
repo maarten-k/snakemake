@@ -14,7 +14,7 @@ import asyncio
 from functools import partial
 from collections import defaultdict
 from itertools import chain, accumulate, product
-from contextlib import ContextDecorator
+from contextlib import ContextDecorator, suppress
 
 from snakemake.executors import (
     AbstractExecutor,
@@ -443,12 +443,10 @@ class JobScheduler:
                 self.job_selector = self.job_selector_ilp
 
         self._user_kill = None
-        try:
+        # If this fails, it is due to scheduler not being invoked in the main thread.
+        # This can only happen with --gui, in which case it is fine for now.
+        with suppress(ValueError):
             signal.signal(signal.SIGTERM, self.exit_gracefully)
-        except ValueError:
-            # If this fails, it is due to scheduler not being invoked in the main thread.
-            # This can only happen with --gui, in which case it is fine for now.
-            pass
         self._open_jobs.release()
 
     def executor_error_callback(self, exception):

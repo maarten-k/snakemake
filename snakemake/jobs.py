@@ -17,6 +17,7 @@ from collections import defaultdict
 from itertools import chain, filterfalse
 from operator import attrgetter
 from typing import Optional
+from contextlib import suppress
 
 from snakemake.io import (
     IOFile,
@@ -794,13 +795,10 @@ class Job(AbstractJob):
                 os.remove(f)
 
         for f, f_ in zip(self.output, self.rule.output):
-            try:
+            with suppress(FileNotFoundError):  # No file == no problem
                 # remove_non_empty_dir only applies to directories which aren't
                 # flagged with directory().
                 f.remove(remove_non_empty_dir=False)
-            except FileNotFoundError:
-                # No file == no problem
-                pass
 
         for f in self.log:
             f.remove(remove_non_empty_dir=False)
@@ -860,9 +858,7 @@ class Job(AbstractJob):
 
         # "minimal" creates symlinks only to the input files in the shadow directory
         # "copy-minimal" creates copies instead
-        if (
-            self.rule.shadow_depth in {"minimal","copy-minimal"}
-        ):
+        if self.rule.shadow_depth in {"minimal", "copy-minimal"}:
             # Re-create the directory structure in the shadow directory
             for f, d in {
                 (item, os.path.dirname(item))

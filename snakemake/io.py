@@ -17,7 +17,8 @@ import copy
 import functools
 import subprocess as sp
 from itertools import product, chain
-from contextlib import contextmanager
+from contextlib import contextmanager, suppress
+
 import string
 import collections
 import asyncio
@@ -518,11 +519,9 @@ class _IOFile(str):
 
             if not is_symlink:
                 if is_dir:
-                    try:
+                    # if no timestamp, hence go on as if it is a file.
+                    with supress(FileNotFoundError):
                         mtime = get_dir_mtime()
-                    except FileNotFoundError:
-                        # No timestamp, hence go on as if it is a file.
-                        pass
 
                 # In the usual case, not a dir, not a symlink.
                 # We need just a single stat call.
@@ -536,11 +535,9 @@ class _IOFile(str):
                 mtime_target = target_stat.st_mtime
 
                 if is_dir:
-                    try:
+                    # ignore no timestamp, hence go on as if it is a file.
+                    with suppress(FileNotFoundError):
                         mtime_target = get_dir_mtime()
-                    except FileNotFoundError:
-                        # No timestamp, hence go on as if it is a file.
-                        pass
 
                 return Mtime(
                     local=mtime, local_target=mtime_target, remote=mtime_remote
@@ -920,10 +917,8 @@ def remove(file, remove_non_empty_dir=False):
     # we definitely still want to zap them. try/except is the safest way.
     # Also, we don't want to remove the null device if it is an output.
     elif os.devnull != str(file):
-        try:
+        with suppress(FileNotFoundError):
             os.remove(file)
-        except FileNotFoundError:
-            pass
 
 
 def get_wildcard_constraints(pattern):

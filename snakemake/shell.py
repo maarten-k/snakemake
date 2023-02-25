@@ -12,6 +12,8 @@ import shutil
 import stat
 import tempfile
 import threading
+from contextlib import suppress
+
 
 from snakemake.utils import format, argvquote, cmd_exe_quote, find_bash_on_windows
 from snakemake.common import ON_WINDOWS, RULEFUNC_CONTEXT_MARKER
@@ -246,10 +248,8 @@ class shell:
         if conda_env and cls.conda_block_conflicting_envvars:
             # remove envvars that conflict with conda
             for var in ["R_LIBS", "PYTHONPATH", "PERLLIB", "PERL5LIB"]:
-                try:
+                with suppress(KeyError):
                     del envvars[var]
-                except KeyError:
-                    pass
 
         use_shell = True
         if ON_WINDOWS and cls.get_executable():

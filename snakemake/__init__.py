@@ -18,6 +18,7 @@ from functools import partial
 import importlib
 import shutil
 import shlex
+from contextlib import suppress
 from importlib.machinery import SourceFileLoader
 from snakemake.target_jobs import parse_target_jobs_cli_args
 
@@ -414,10 +415,8 @@ def snakemake(
                 elif v.isnumeric():
                     v = int(v)
                 else:
-                    try:
+                    with suppress(ValueError):
                         v = float(v)
-                    except ValueError:
-                        pass
                 tibanna_config_dict.update({k: v})
             tibanna_config = tibanna_config_dict
 
@@ -1022,13 +1021,11 @@ def parse_config(args):
                 update_config(config, {key: v})
                 continue
             for parser in parsers:
-                try:
+                with suppress(BaseException):
                     v = parser(val)
                     # avoid accidental interpretation as function
                     if not callable(v):
                         break
-                except:
-                    pass
             assert v is not None
             update_config(config, {key: v})
     return config
@@ -2880,21 +2877,16 @@ def main(argv=None):
         print("Listening on {}.".format(url), file=sys.stderr)
 
         def open_browser():
-            try:
+            with suppress(BaseException):
                 webbrowser.open(url)
-            except:
-                pass
 
         print("Open this address in your browser to access the GUI.", file=sys.stderr)
         threading.Timer(0.5, open_browser).start()
         success = True
 
-        try:
+        with suppress(KeyboardInterrupt, SystemExit):
             gui.app.run(debug=False, threaded=True, port=int(port), host=host)
 
-        except (KeyboardInterrupt, SystemExit):
-            # silently close
-            pass
     else:
         log_handler = []
         if args.log_handler_script is not None:

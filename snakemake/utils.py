@@ -17,6 +17,8 @@ import multiprocessing
 import string
 import shlex
 import sys
+from contextlib import suppress
+
 from urllib.parse import urljoin
 from urllib.request import url2pathname
 
@@ -112,7 +114,7 @@ def validate(data, schema, set_default=True):
     DefaultValidator = extend_with_default(Validator)
 
     if not isinstance(data, dict):
-        try:
+        with suppress(ImportError):
             import pandas as pd
 
             recordlist = []
@@ -137,8 +139,6 @@ def validate(data, schema, set_default=True):
                         data.insert(n, col, newdata.loc[:, col])
                         n = n + 1
                 return
-        except ImportError:
-            pass
         raise WorkflowError("Unsupported data type for validation.")
     else:
         try:
@@ -516,7 +516,7 @@ def available_cpu_count():
 
     Adapted from https://stackoverflow.com/a/1006301/715090
     """
-    try:
+    with suppress(OSError):
         with open("/proc/self/status") as f:
             status = f.read()
         m = re.search(r"(?m)^Cpus_allowed:\s*(.*)$", status)
@@ -524,8 +524,6 @@ def available_cpu_count():
             res = bin(int(m.group(1).replace(",", ""), 16)).count("1")
             if res > 0:
                 return min(res, multiprocessing.cpu_count())
-    except OSError:
-        pass
 
     return multiprocessing.cpu_count()
 

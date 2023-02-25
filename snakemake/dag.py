@@ -15,6 +15,8 @@ from collections import defaultdict, Counter, deque, namedtuple
 from itertools import chain, filterfalse, groupby
 from functools import partial
 from pathlib import Path
+from contextlib import suppress
+
 import uuid
 import math
 import subprocess
@@ -288,27 +290,21 @@ class DAG:
         final_jobs = set(self.bfs(self.dependencies, *self.targetjobs))
         todelete = [job for job in self.dependencies if job not in final_jobs]
         for job in todelete:
-            try:
+            with suppress(KeyError):
                 self._needrun.remove(job)
-            except KeyError:
-                pass
 
             # delete all pointers from dependencies to this job
             for dep in self.dependencies[job]:
-                try:
+                # In case the pointer has been deleted before or
+                # never created, we can simply continue.
+                with suppress(KeyError):
                     del self.depending[dep][job]
-                except KeyError:
-                    # In case the pointer has been deleted before or
-                    # never created, we can simply continue.
-                    pass
 
             # delete all dependencies
             del self.dependencies[job]
-            try:
+            with suppress(KeyError):
                 # delete all pointers to downstream dependencies
                 del self.depending[job]
-            except KeyError:
-                pass
 
     def update_conda_envs(self):
         # First deduplicate based on job.conda_env_spec
@@ -1588,11 +1584,8 @@ class DAG:
         self._running.update(jobs)
         self._ready_jobs -= jobs
         for job in jobs:
-            try:
+            with suppress(KeyError):
                 del self._n_until_ready[job]
-            except KeyError:
-                # already gone
-                pass
 
     def finish(self, job, update_dynamic=True):
         """Finish a given job (e.g. remove from ready jobs, mark depending jobs
@@ -1607,10 +1600,8 @@ class DAG:
         else:
             self.reason(job).mark_finished()
 
-        try:
+        with suppress(KeyError):
             self._ready_jobs.remove(job)
-        except KeyError:
-            pass
 
         if job.is_group():
             jobs = job
@@ -1783,10 +1774,8 @@ class DAG:
             del self._n_until_ready[job]
         # remove from cache
         for f in job.output:
-            try:
+            with suppress(KeyError):
                 del self.job_cache[(job.rule, f)]
-            except KeyError:
-                pass
 
     def replace_job(self, job, newjob, recursive=True):
         """Replace given job with new job."""
