@@ -38,7 +38,7 @@ class ProvenanceHashMap:
         This hash, however, shall work without having to generate the files,
         just by describing all steps down to a given job.
         """
-        assert (cache_mode == "omit-software") or (cache_mode == "all")
+        assert cache_mode in {"omit-software", "all"}
 
         if job in self._hashes:
             return self._hashes[job]

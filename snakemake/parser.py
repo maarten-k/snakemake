@@ -774,13 +774,7 @@ class Rule(GlobalKeywordState):
         if is_name(token):
             try:
                 if (
-                    token.string == "run"
-                    or token.string == "shell"
-                    or token.string == "script"
-                    or token.string == "wrapper"
-                    or token.string == "notebook"
-                    or token.string == "template_engine"
-                    or token.string == "cwl"
+                    token.string in {"run","shell","script","wrapper","notebook","template_engine","cwl"}
                 ):
                     if self.run:
                         raise self.error(
@@ -1032,7 +1026,7 @@ class UseRule(GlobalKeywordState):
 
     def state_rules_comma_or_end(self, token):
         if is_name(token):
-            if token.string == "from" or token.string == "as":
+            if token.string in {"from","as"}:
                 if not self.rules:
                     self.error(
                         "Expecting rule names after 'use rule' statement.", token
@@ -1142,7 +1136,7 @@ class UseRule(GlobalKeywordState):
 
     def state_exclude_comma_or_end(self, token):
         if is_name(token):
-            if token.string == "from" or token.string == "as":
+            if token.string in {"from","as"}:
                 if not self.exclude_rules:
                     self.error(
                         "Expecting rule names after 'exclude' statement.",

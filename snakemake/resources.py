@@ -580,7 +580,7 @@ def infer_resources(name, value, resources: dict):
     """Infer resources from a given one, if possible."""
     from humanfriendly import parse_size, parse_timespan, InvalidTimespan, InvalidSize
 
-    if (name == "mem" or name == "disk") and isinstance(value, str):
+    if (name in {"mem","disk"}) and isinstance(value, str):
         inferred_name = f"{name}_mb"
         try:
             in_bytes = parse_size(value)
