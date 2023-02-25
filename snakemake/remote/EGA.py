@@ -48,7 +48,7 @@ class RemoteProvider(AbstractRemoteProvider):
         check_deprecated_retry(retry)
         self._token = None
         self._expires = None
-        self._file_cache = dict()
+        self._file_cache = {}
 
     def _login(self):
         if self._expires is not None and self._expires > time.time():

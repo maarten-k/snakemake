@@ -473,7 +473,7 @@ class GoogleLifeSciencesExecutor(ClusterExecutor):
         )
 
         # First pass - eliminate anything that too low in cpu/memory
-        keepers = dict()
+        keepers = {}
 
         # Also keep track of max cpus and memory, in case none available
         max_cpu = 1
@@ -489,7 +489,7 @@ class GoogleLifeSciencesExecutor(ClusterExecutor):
         # If a prefix is set, filter down to it
         if self.machine_type_prefix:
             machine_types = keepers
-            keepers = dict()
+            keepers = {}
             for name, machine_type in machine_types.items():
                 if name.startswith(self.machine_type_prefix):
                     keepers[name] = machine_type

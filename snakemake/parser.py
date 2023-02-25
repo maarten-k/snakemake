@@ -73,7 +73,7 @@ class StopAutomaton(Exception):
 
 
 class TokenAutomaton:
-    subautomata = dict()
+    subautomata = {}
 
     def __init__(self, snakefile, base_indent=0, dedent=0, root=True):
         self.root = root
@@ -1269,7 +1269,7 @@ def parse(path, workflow, overwrite_shellcmd=None, rulecount=0):
     Shell.overwrite_cmd = overwrite_shellcmd
     with Snakefile(path, workflow, rulecount=rulecount) as snakefile:
         automaton = Python(snakefile)
-        linemap = dict()
+        linemap = {}
         compilation = []
         for t, orig_token in automaton.consume():
             l = lineno(orig_token)

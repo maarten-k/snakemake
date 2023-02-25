@@ -84,14 +84,14 @@ class Rule:
             self._input = InputFiles()
             self._output = OutputFiles()
             self._params = Params()
-            self._wildcard_constraints = dict()
-            self.dependencies = dict()
+            self._wildcard_constraints = {}
+            self.dependencies = {}
             self.dynamic_output = set()
             self.dynamic_input = set()
             self.temp_output = set()
             self.protected_output = set()
             self.touch_output = set()
-            self.subworkflow_input = dict()
+            self.subworkflow_input = {}
             self.shadow_depth = None
             self.resources = None
             self.priority = 0
@@ -465,7 +465,7 @@ class Rule:
         """Check ``Namedlist`` for duplicate entries and raise a ``WorkflowError``
         on problems. Does not raise if the entry is empty.
         """
-        seen = dict()
+        seen = {}
         idx = None
         for name, value in self.output._allitems():
             if name is None:
@@ -800,7 +800,7 @@ class Rule:
     ):
         incomplete = False
         if aux_params is None:
-            aux_params = dict()
+            aux_params = {}
         for name, item in olditems._allitems():
             start = len(newitems)
             is_unpack = is_flagged(item, "unpack")
@@ -901,7 +901,7 @@ class Rule:
             return exception.targetfile
 
         input = InputFiles()
-        mapping = dict()
+        mapping = {}
         try:
             incomplete = self._apply_wildcards(
                 input,
@@ -1061,7 +1061,7 @@ class Rule:
     def expand_resources(
         self, wildcards, input, attempt, skip_evaluation: typing.Optional[set] = None
     ):
-        resources = dict()
+        resources = {}
 
         def apply(name, res, threads=None):
             if skip_evaluation is not None and name in skip_evaluation:
@@ -1224,7 +1224,7 @@ class Rule:
         requested_output -- a concrete filepath
         """
         if requested_output is None:
-            return dict()
+            return {}
 
         # first try to match the output with the given wildcards
         if wildcards_dict is not None:

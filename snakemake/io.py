@@ -124,10 +124,10 @@ class ExistsDict(dict):
 
 class IOCache:
     def __init__(self, max_wait_time):
-        self.mtime = dict()
+        self.mtime = {}
         self.exists_local = ExistsDict(self)
         self.exists_remote = ExistsDict(self)
-        self.size = dict()
+        self.size = {}
         self.active = True
         self.remaining_wait_time = max_wait_time
         self.max_wait_time = max_wait_time
@@ -1006,7 +1006,7 @@ def is_callable(value):
 
 class AnnotatedString(str):
     def __init__(self, value):
-        self.flags = dict()
+        self.flags = {}
         self.callable = value if is_callable(value) else None
 
     def new_from(self, new_value):
@@ -1315,7 +1315,7 @@ def glob_wildcards(pattern, files=None, followlinks=False):
 
     names = [match.group("name") for match in _wildcard_regex.finditer(pattern)]
     Wildcards = collections.namedtuple("Wildcards", names)
-    wildcards = Wildcards(*[list() for name in names])
+    wildcards = Wildcards(*[[] for name in names])
 
     pattern = re.compile(regex(pattern))
 
@@ -1491,7 +1491,7 @@ class Namedlist(list):
             Namedlist (keys become names)
         """
         list.__init__(self)
-        self._names = dict()
+        self._names = {}
 
         # white-list of attribute names that can be overridden in _set_name
         # default to throwing exception if called to prevent use as functions

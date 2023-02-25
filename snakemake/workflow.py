@@ -161,7 +161,7 @@ class Workflow:
         Create the controller.
         """
 
-        self.global_resources = dict() if resources is None else resources
+        self.global_resources = {} if resources is None else resources
         self.global_resources["_cores"] = cores
         self.global_resources["_nodes"] = nodes
 
@@ -175,7 +175,7 @@ class Workflow:
         self.workdir_init = os.path.abspath(os.curdir)
         self._ruleorder = Ruleorder()
         self._localrules = set()
-        self.linemaps = dict()
+        self.linemaps = {}
         self.rule_count = 0
         self.basedir = os.path.dirname(snakefile)
         self.main_snakefile = os.path.abspath(snakefile)
@@ -183,19 +183,19 @@ class Workflow:
         self.included_stack = []
         self.jobscript = jobscript
         self.persistence = None
-        self._subworkflows = dict()
+        self._subworkflows = {}
         self.overwrite_shellcmd = overwrite_shellcmd
-        self.overwrite_config = overwrite_config or dict()
+        self.overwrite_config = overwrite_config or {}
         self.overwrite_configfiles = overwrite_configfiles
-        self.overwrite_clusterconfig = overwrite_clusterconfig or dict()
-        self.overwrite_threads = overwrite_threads or dict()
-        self.overwrite_resources = overwrite_resources or dict()
+        self.overwrite_clusterconfig = overwrite_clusterconfig or {}
+        self.overwrite_threads = overwrite_threads or {}
+        self.overwrite_resources = overwrite_resources or {}
         self.config_args = config_args
         self.immediate_submit = None
         self._onsuccess = lambda log: None
         self._onerror = lambda log: None
         self._onstart = lambda log: None
-        self._wildcard_constraints = dict()
+        self._wildcard_constraints = {}
         self.debug = debug
         self.verbose = verbose
         self._rulecount = 0
@@ -229,16 +229,16 @@ class Workflow:
         # environment variables to pass to jobs
         # These are defined via the "envvars:" syntax in the Snakefile itself
         self.envvars = set()
-        self.overwrite_groups = overwrite_groups or dict()
-        self.group_components = group_components or dict()
-        self._scatter = dict(overwrite_scatter or dict())
-        self.overwrite_scatter = overwrite_scatter or dict()
-        self.overwrite_resource_scopes = overwrite_resource_scopes or dict()
+        self.overwrite_groups = overwrite_groups or {}
+        self.group_components = group_components or {}
+        self._scatter = dict(overwrite_scatter or {})
+        self.overwrite_scatter = overwrite_scatter or {}
+        self.overwrite_resource_scopes = overwrite_resource_scopes or {}
         self.resource_scopes = ResourceScopes.defaults()
         self.resource_scopes.update(self.overwrite_resource_scopes)
         self.conda_not_block_search_path_envvars = conda_not_block_search_path_envvars
         self.execute_subworkflows = execute_subworkflows
-        self.modules = dict()
+        self.modules = {}
         self.sourcecache = SourceCache()
         self.scheduler_solver_path = scheduler_solver_path
         self._conda_base_path = conda_base_path
@@ -276,7 +276,7 @@ class Workflow:
                 self.output_file_cache = LocalOutputFileCache()
         else:
             self.output_file_cache = None
-            self.cache_rules = dict()
+            self.cache_rules = {}
 
         if default_resources is not None:
             self.default_resources = default_resources

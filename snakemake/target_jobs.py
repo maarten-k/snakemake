@@ -23,7 +23,7 @@ def parse_target_jobs_cli_args(args):
                 )
                 target_jobs.append(TargetSpec(rulename, wildcards))
             else:
-                target_jobs.append(TargetSpec(rulename, dict()))
+                target_jobs.append(TargetSpec(rulename, {}))
         return target_jobs
 
 

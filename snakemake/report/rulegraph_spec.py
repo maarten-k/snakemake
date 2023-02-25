@@ -3,7 +3,7 @@ from functools import partial
 
 def rulegraph_spec(dag):
     # get toposorting, and keep only one job of each rule per level
-    representatives = dict()
+    representatives = {}
 
     toposorted = [
         get_representatives(level, representatives) for level in dag.toposorted()
@@ -33,7 +33,7 @@ def rulegraph_spec(dag):
 
 
 def get_representatives(level: list, representatives: dict):
-    unique = dict()
+    unique = {}
     for job in level:
         if job.rule.name in unique:
             representatives[job] = unique[job.rule.name]

@@ -118,7 +118,7 @@ class DAG:
         self.dependencies = defaultdict(partial(defaultdict, set))
         self.depending = defaultdict(partial(defaultdict, set))
         self._needrun = set()
-        self._priority = dict()
+        self._priority = {}
         self._reason = defaultdict(Reason)
         self._finished = set()
         self._dynamic = set()
@@ -139,12 +139,12 @@ class DAG:
         self._ready_jobs = set()
         self.notemp = notemp
         self.keep_remote_local = keep_remote_local
-        self._jobid = dict()
-        self.job_cache = dict()
-        self.conda_envs = dict()
-        self.container_imgs = dict()
+        self._jobid = {}
+        self.job_cache = {}
+        self.conda_envs = {}
+        self.container_imgs = {}
         self._progress = 0
-        self._group = dict()
+        self._group = {}
         self._n_until_ready = defaultdict(int)
         self._running = set()
 
@@ -839,7 +839,7 @@ class DAG:
         if visited is None:
             visited = set()
         if known_producers is None:
-            known_producers = dict()
+            known_producers = {}
         producers = []
         exceptions = []
         cycles = []
@@ -946,7 +946,7 @@ class DAG:
         if visited is None:
             visited = set()
         if known_producers is None:
-            known_producers = dict()
+            known_producers = {}
         visited.add(job)
         dependencies = self.dependencies[job]
         potential_dependencies = self.collect_potential_dependencies(
@@ -956,8 +956,8 @@ class DAG:
         skip_until_dynamic = skip_until_dynamic and not job.dynamic_output
 
         missing_input = set()
-        producer = dict()
-        exceptions = dict()
+        producer = {}
+        exceptions = {}
         for res in potential_dependencies:
             if create_inventory:
                 # If possible, obtain inventory information starting from
@@ -1038,7 +1038,7 @@ class DAG:
             # Concurrently collect mtimes of all existing files.
             self.workflow.iocache.mtime_inventory(self.jobs)
 
-        output_mintime = dict()
+        output_mintime = {}
 
         def update_output_mintime(job):
             try:
@@ -1054,7 +1054,7 @@ class DAG:
                         return
                 output_mintime[job] = None
 
-        is_same_checksum_cache = dict()
+        is_same_checksum_cache = {}
 
         def is_same_checksum(f, job):
             try:
@@ -1293,7 +1293,7 @@ class DAG:
             self._priority[job] = Job.HIGHEST_PRIORITY
 
     def update_groups(self):
-        groups = dict()
+        groups = {}
         for job in self.needrun_jobs():
             if job.group is None:
                 continue

@@ -150,7 +150,7 @@ class shell:
             context = func_context
         else:
             # Otherwise, context is just filled via kwargs.
-            context = dict()
+            context = {}
         # add kwargs to context (overwriting the locals of the caller)
         context.update(kwargs)
 

@@ -198,7 +198,7 @@ def report(
 
     text = definitions + text + "\n\n" + "\n\n".join(attachments) + metadata
 
-    overrides = dict()
+    overrides = {}
     if template is not None:
         overrides["template"] = template
     if stylesheet is not None:

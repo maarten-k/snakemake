@@ -753,7 +753,7 @@ class ClusterExecutor(RealExecutor):
         self.jobname = jobname
         self._tmpdir = None
         self.cores = cores if cores else "all"
-        self.cluster_config = cluster_config if cluster_config else dict()
+        self.cluster_config = cluster_config if cluster_config else {}
 
         self.restart_times = restart_times
 
@@ -904,8 +904,8 @@ class ClusterExecutor(RealExecutor):
 
     def cluster_params(self, job):
         """Return wildcards object for job from cluster_config."""
-        cluster = self.cluster_config.get("__default__", dict()).copy()
-        cluster.update(self.cluster_config.get(job.name, dict()))
+        cluster = self.cluster_config.get("__default__", {}).copy()
+        cluster.update(self.cluster_config.get(job.name, {}))
         # Format values with available parameters from the job.
         for key, value in list(cluster.items()):
             if isinstance(value, str):
@@ -1006,7 +1006,7 @@ class GenericClusterExecutor(ClusterExecutor):
         self.cancelcmd = cancelcmd
         self.sidecarcmd = sidecarcmd
         self.cancelnargs = cancelnargs
-        self.external_jobid = dict()
+        self.external_jobid = {}
         # We need to collect all external ids so we can properly cancel even if
         # the status update queue is running.
         self.all_ext_jobids = []
@@ -1387,7 +1387,7 @@ class SynchronousClusterExecutor(ClusterExecutor):
             keepincomplete=keepincomplete,
         )
         self.submitcmd = submitcmd
-        self.external_jobid = dict()
+        self.external_jobid = {}
 
     def get_job_exec_prefix(self, job):
         if self.assume_shared_fs:
@@ -2311,11 +2311,11 @@ class TibannaExecutor(ClusterExecutor):
         file_prefix = (
             "file:///data1/snakemake"  # working dir inside snakemake container on VM
         )
-        input_source = dict()
+        input_source = {}
         for ip in job.input:
             ip_rel = self.adjust_filepath(ip)
             input_source[os.path.join(file_prefix, ip_rel)] = "s3://" + ip
-        output_target = dict()
+        output_target = {}
         output_all = [eo for eo in job.expanded_output]
         if job.log:
             if isinstance(job.log, list):

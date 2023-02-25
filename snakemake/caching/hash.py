@@ -18,7 +18,7 @@ __version__ = "0.1"
 
 class ProvenanceHashMap:
     def __init__(self):
-        self._hashes = dict()
+        self._hashes = {}
 
     def get_provenance_hash(self, job: Job, cache_mode: str):
         versioned_hash = hashlib.sha256()

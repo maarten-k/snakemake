@@ -639,7 +639,7 @@ class Env:
 
 
 class Conda:
-    instances = dict()
+    instances = {}
     lock = threading.Lock()
 
     def __new__(cls, container_img=None, prefix_path=None, frontend=None, check=False):

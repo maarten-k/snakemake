@@ -338,7 +338,7 @@ class BashEncoder:
     def encode_snakemake(self, smk: Snakemake) -> str:
         """Turn a snakemake object into a collection of bash associative arrays"""
         arrays = []
-        main_aa = dict()
+        main_aa = {}
         for var in vars(smk):
             val = getattr(smk, var)
             if var in self.namedlists:

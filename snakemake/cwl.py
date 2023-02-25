@@ -64,7 +64,7 @@ def cwl(
             return {"path": os.path.abspath(f), "class": "File"}
         return [file_spec(f_) for f_ in f]
 
-    inputs = dict()
+    inputs = {}
     inputs.update({name: file_spec(f) for name, f in input.items()})
     inputs.update({name: p for name, p in params.items()})
     inputs.update({name: f for name, f in output.items()})

@@ -72,13 +72,13 @@ def snakemake(
     nodes=None,
     local_cores=1,
     max_threads=None,
-    resources=dict(),
+    resources={},
     overwrite_threads=None,
     overwrite_scatter=None,
     overwrite_resource_scopes=None,
     default_resources=None,
     overwrite_resources=None,
-    config=dict(),
+    config={},
     configfiles=None,
     config_args=None,
     workdir=None,
@@ -404,7 +404,7 @@ def snakemake(
         ), "default_remote_prefix needed if tibanna is specified"
         assert tibanna_sfn, "tibanna_sfn needed if tibanna is specified"
         if tibanna_config:
-            tibanna_config_dict = dict()
+            tibanna_config_dict = {}
             for cf in tibanna_config:
                 k, v = cf.split("=")
                 if v == "true":
@@ -451,7 +451,7 @@ def snakemake(
         for other in configs[1:]:
             update_config(cluster_config_content, other)
     else:
-        cluster_config_content = dict()
+        cluster_config_content = {}
 
     run_local = not (
         cluster
@@ -539,7 +539,7 @@ def snakemake(
         )
         return False
 
-    overwrite_config = dict()
+    overwrite_config = {}
     if configfiles is None:
         configfiles = []
     for f in configfiles:
@@ -859,7 +859,7 @@ def snakemake(
         if "workflow" in locals():
             print_exception(ex, workflow.linemaps)
         else:
-            print_exception(ex, dict())
+            print_exception(ex, {})
         success = False
 
     if workdir:
@@ -935,7 +935,7 @@ def parse_set_resource_scope(args):
 
 
 def parse_set_ints(arg, errmsg):
-    assignments = dict()
+    assignments = {}
     if arg is not None:
         for entry in arg:
             key, value = parse_key_value_arg(entry, errmsg=errmsg)
@@ -967,7 +967,7 @@ def parse_batch(args):
 
 def parse_groups(args):
     errmsg = "Invalid groups definition: entries have to be defined as RULE=GROUP pairs"
-    overwrite_groups = dict()
+    overwrite_groups = {}
     if args.groups is not None:
         for entry in args.groups:
             rule, group = parse_key_value_arg(entry, errmsg=errmsg)
@@ -977,7 +977,7 @@ def parse_groups(args):
 
 def parse_group_components(args):
     errmsg = "Invalid group components definition: entries have to be defined as GROUP=COMPONENTS pairs (with COMPONENTS being a positive integer)"
-    group_components = dict()
+    group_components = {}
     if args.group_components is not None:
         for entry in args.group_components:
             group, count = parse_key_value_arg(entry, errmsg=errmsg)
@@ -1005,7 +1005,7 @@ def parse_config(args):
 
     yaml_base_load = lambda s: yaml.load(s, Loader=yaml.loader.BaseLoader)
     parsers = [int, float, _bool_parser, yaml_base_load, str]
-    config = dict()
+    config = {}
     if args.config is not None:
         valid = re.compile(r"[a-zA-Z_]\w*$")
         for entry in args.config:

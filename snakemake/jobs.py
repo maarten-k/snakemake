@@ -120,7 +120,7 @@ def _get_scheduler_resources(job):
 
 class JobFactory:
     def __init__(self):
-        self.cache = dict()
+        self.cache = {}
 
     def new(
         self,
@@ -159,7 +159,7 @@ class JobFactory:
 class Job(AbstractJob):
     HIGHEST_PRIORITY = sys.maxsize
 
-    obj_cache = dict()
+    obj_cache = {}
 
     __slots__ = [
         "rule",
@@ -253,7 +253,7 @@ class Job(AbstractJob):
         self.dynamic_output, self.dynamic_input = set(), set()
         self.temp_output, self.protected_output = set(), set()
         self.touch_output = set()
-        self.subworkflow_input = dict()
+        self.subworkflow_input = {}
         for f in self.output:
             f_ = output_mapping[f]
             if f_ in self.rule.dynamic_output:
@@ -957,7 +957,7 @@ class Job(AbstractJob):
 
     def format_wildcards(self, string, **variables):
         """Format a string with variables from the job."""
-        _variables = dict()
+        _variables = {}
         _variables.update(self.rule.workflow.globals)
         _variables.update(
             dict(
@@ -1210,7 +1210,7 @@ class Job(AbstractJob):
 
 class GroupJobFactory:
     def __init__(self):
-        self.cache = dict()
+        self.cache = {}
 
     def new(self, id, jobs, resources):
         jobs = frozenset(jobs)
@@ -1224,7 +1224,7 @@ class GroupJobFactory:
 
 
 class GroupJob(AbstractJob):
-    obj_cache = dict()
+    obj_cache = {}
 
     __slots__ = [
         "groupid",
@@ -1516,7 +1516,7 @@ class GroupJob(AbstractJob):
     def format_wildcards(self, string, **variables):
         """Format a string with variables from the job."""
 
-        _variables = dict()
+        _variables = {}
         _variables.update(self.dag.workflow.globals)
         _variables.update(
             dict(

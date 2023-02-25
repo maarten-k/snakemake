@@ -14,7 +14,7 @@ def format_error(
     ex, lineno, linemaps=None, snakefile=None, show_traceback=False, rule=None
 ):
     if linemaps is None:
-        linemaps = dict()
+        linemaps = {}
     msg = str(ex)
     if linemaps and snakefile and snakefile in linemaps:
         lineno = linemaps[snakefile][lineno]

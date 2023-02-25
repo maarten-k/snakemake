@@ -542,7 +542,7 @@ class GroupResources:
 
 def parse_resources(resources_args, fallback=None):
     """Parse resources from args."""
-    resources = dict()
+    resources = {}
     if resources_args is not None:
         valid = re.compile(r"[a-zA-Z_]\w*$")
 

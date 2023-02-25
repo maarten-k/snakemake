@@ -62,7 +62,7 @@ class SlurmJobstepExecutor(ClusterExecutor):
         pass
 
     def run(self, job, callback=None, submit_callback=None, error_callback=None):
-        jobsteps = dict()
+        jobsteps = {}
 
         # TODO revisit special handling for group job levels via srun at a later stage
         # if job.is_group():

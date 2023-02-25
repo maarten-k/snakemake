@@ -52,7 +52,7 @@ class Persistence:
             os.mkdir(self._lockdir)
 
         self.dag = dag
-        self._lockfile = dict()
+        self._lockfile = {}
 
         self._metadata_path = os.path.join(self.path, "metadata")
         self._incomplete_path = os.path.join(self.path, "incomplete")
@@ -552,7 +552,7 @@ class Persistence:
 
     def _read_record_uncached(self, subject, id):
         if not self._exists_record(subject, id):
-            return dict()
+            return {}
         with open(self._record_path(subject, id)) as f:
             try:
                 return json.load(f)
@@ -561,7 +561,7 @@ class Persistence:
         # case: file is corrupted, delete it
         logger.warning(f"Deleting corrupted metadata record.")
         self._delete_record(subject, id)
-        return dict()
+        return {}
 
     def _exists_record(self, subject, id):
         return os.path.exists(self._record_path(subject, id))
