@@ -13,12 +13,16 @@ from contextlib import suppress
 
 import sys
 import inspect
-import sre_constants
 import collections
 from urllib.parse import urljoin
 from pathlib import Path
 from itertools import chain
 from functools import partial
+
+try:
+    import re._constants as sre_constants
+except ImportError:  # python < 3.11
+    import sre_constants
 
 
 from snakemake.io import (
