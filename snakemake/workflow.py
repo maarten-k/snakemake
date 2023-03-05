@@ -415,7 +415,7 @@ class Workflow:
         is_overwrite = self.is_rule(name)
         if not allow_overwrite and is_overwrite:
             raise CreateRuleException(
-                "The name {} is already used by another rule".format(name),
+                f"The name {name} is already used by another rule",
                 lineno=lineno,
                 snakefile=snakefile,
             )
@@ -775,7 +775,7 @@ class Workflow:
                 )
                 updated = []
                 if subworkflow_targets:
-                    logger.info("Executing subworkflow {}.".format(subworkflow.name))
+                    logger.info(f"Executing subworkflow {subworkflow.name}.")
                     if not subsnakemake(
                         subworkflow.snakefile,
                         workdir=subworkflow.workdir,
@@ -1003,13 +1003,13 @@ class Workflow:
             if len(dag):
                 shell_exec = shell.get_executable()
                 if shell_exec is not None:
-                    logger.info("Using shell: {}".format(shell_exec))
+                    logger.info(f"Using shell: {shell_exec}")
                 if cluster or cluster_sync or drmaa:
                     logger.resources_info(
-                        "Provided cluster nodes: {}".format(self.nodes)
+                        f"Provided cluster nodes: {self.nodes}"
                     )
                 elif kubernetes or tibanna or google_lifesciences:
-                    logger.resources_info("Provided cloud nodes: {}".format(self.nodes))
+                    logger.resources_info(f"Provided cloud nodes: {self.nodes}")
                 else:
                     if self._cores is not None:
                         warning = (
@@ -1018,7 +1018,7 @@ class Workflow:
                             else " (use --cores to define parallelism)"
                         )
                         logger.resources_info(
-                            "Provided cores: {}{}".format(self._cores, warning)
+                            f"Provided cores: {self._cores}{warning}"
                         )
                         logger.resources_info(
                             "Rules claiming more threads " "will be scaled down."
@@ -1202,7 +1202,7 @@ class Workflow:
         snakefile = infer_source_file(snakefile, basedir)
 
         if not self.modifier.allow_rule_overwrite and snakefile in self.included:
-            logger.info("Multiple includes of {} ignored".format(snakefile))
+            logger.info(f"Multiple includes of {snakefile} ignored")
             return
         self.included.append(snakefile)
         self.included_stack.append(snakefile)
@@ -1263,7 +1263,7 @@ class Workflow:
             n = self._scatter[key]
             return expand(
                 *args,
-                scatteritem=map("{{}}-of-{}".format(n).format, range(1, n + 1)),
+                scatteritem=map(f"{{}}-of-{n}".format, range(1, n + 1)),
                 **wildcards,
             )
 
@@ -1631,7 +1631,7 @@ class Workflow:
                     rule=rule,
                 )
 
-            ruleinfo.func.__name__ = "__{}".format(rule.name)
+            ruleinfo.func.__name__ = f"__{rule.name}"
             self.globals[ruleinfo.func.__name__] = ruleinfo.func
 
             rule_proxy = RuleProxy(rule)

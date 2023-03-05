@@ -143,7 +143,7 @@ class Persistence:
                 i += 1
                 # this can take a while for large folders...
                 if (i % 10000) == 0 and i > 0:
-                    logger.info("{} files migrated".format(i))
+                    logger.info(f"{i} files migrated")
 
         logger.info("Migration complete")
 
@@ -575,14 +575,14 @@ class Persistence:
         return (
             f
             for f, _ in listfiles(
-                os.path.join(self._lockdir, "{{n,[0-9]+}}.{}.lock".format(type))
+                os.path.join(self._lockdir, f"{{n,[0-9]+}}.{type}.lock")
             )
             if not os.path.isdir(f)
         )
 
     def _lock(self, files, type):
         for i in count(0):
-            lockfile = os.path.join(self._lockdir, "{}.{}.lock".format(i, type))
+            lockfile = os.path.join(self._lockdir, f"{i}.{type}.lock")
             if not os.path.exists(lockfile):
                 self._lockfile[type] = lockfile
                 with open(lockfile, "w") as lock:

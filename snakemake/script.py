@@ -210,7 +210,7 @@ class REncoder:
                 elif isinstance(value, np.bool_):
                     return "TRUE" if value else "FALSE"
 
-        raise ValueError("Unsupported value for conversion into R: {}".format(value))
+        raise ValueError(f"Unsupported value for conversion into R: {value}")
 
     @classmethod
     def encode_list(cls, l):
@@ -220,13 +220,13 @@ class REncoder:
     def encode_items(cls, items):
         def encode_item(item):
             name, value = item
-            return '"{}" = {}'.format(name, cls.encode_value(value))
+            return f'"{name}" = {cls.encode_value(value)}'
 
         return ", ".join(map(encode_item, items))
 
     @classmethod
     def encode_dict(cls, d):
-        d = "list({})".format(cls.encode_items(d.items()))
+        d = f"list({cls.encode_items(d.items())})"
         return d
 
     @classmethod
@@ -270,7 +270,7 @@ class JuliaEncoder:
                 if isinstance(value, np.number):
                     return str(value)
         raise ValueError(
-            "Unsupported value for conversion into Julia: {}".format(value)
+            f"Unsupported value for conversion into Julia: {value}"
         )
 
     @classmethod
@@ -281,7 +281,7 @@ class JuliaEncoder:
     def encode_items(cls, items):
         def encode_item(item):
             name, value = item
-            return '"{}" => {}'.format(name, cls.encode_value(value))
+            return f'"{name}" => {cls.encode_value(value)}'
 
         return ", ".join(map(encode_item, items))
 
@@ -289,12 +289,12 @@ class JuliaEncoder:
     def encode_positional_items(cls, namedlist):
         encoded = ""
         for index, value in enumerate(namedlist):
-            encoded += "{} => {}, ".format(index + 1, cls.encode_value(value))
+            encoded += f"{index + 1} => {cls.encode_value(value)}, "
         return encoded
 
     @classmethod
     def encode_dict(cls, d):
-        d = "Dict({})".format(cls.encode_items(d.items()))
+        d = f"Dict({cls.encode_items(d.items())})"
         return d
 
     @classmethod

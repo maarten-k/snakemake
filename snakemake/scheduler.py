@@ -557,10 +557,10 @@ class JobScheduler:
                         job.reset_params_and_resources()
 
                     logger.debug(
-                        "Resources before job selection: {}".format(self.resources)
+                        f"Resources before job selection: {self.resources}"
                     )
                     logger.debug(
-                        "Ready jobs ({}):\n\t".format(len(needrun))
+                        f"Ready jobs ({len(needrun)}):\n\t"
                         + "\n\t".join(map(str, needrun))
                     )
 
@@ -570,11 +570,11 @@ class JobScheduler:
                     self._last_job_selection_empty = not run
 
                     logger.debug(
-                        "Selected jobs ({}):\n\t".format(len(run))
+                        f"Selected jobs ({len(run)}):\n\t"
                         + "\n\t".join(map(str, run))
                     )
                     logger.debug(
-                        "Resources after job selection: {}".format(self.resources)
+                        f"Resources after job selection: {self.resources}"
                     )
 
                 # update running jobs
@@ -724,7 +724,7 @@ class JobScheduler:
             # assert self.resources["_cores"] > 0
             scheduled_jobs = {
                 job: pulp.LpVariable(
-                    "job_{}".format(idx), lowBound=0, upBound=1, cat=pulp.LpInteger
+                    f"job_{idx}", lowBound=0, upBound=1, cat=pulp.LpInteger
                 )
                 for idx, job in enumerate(jobs)
             }
@@ -744,14 +744,14 @@ class JobScheduler:
 
             temp_job_improvement = {
                 temp_file: pulp.LpVariable(
-                    "temp_file_{}".format(idx), lowBound=0, upBound=1, cat="Continuous"
+                    f"temp_file_{idx}", lowBound=0, upBound=1, cat="Continuous"
                 )
                 for idx, temp_file in enumerate(temp_files)
             }
 
             temp_file_deletable = {
                 temp_file: pulp.LpVariable(
-                    "deletable_{}".format(idx),
+                    f"deletable_{idx}",
                     lowBound=0,
                     upBound=1,
                     cat=pulp.LpInteger,

@@ -177,7 +177,7 @@ class shell:
         # incompatible with the module's environment.
         if env_modules and "slurm" not in (item.filename for item in inspect.stack()):
             cmd = env_modules.shellcmd(cmd)
-            logger.info("Activating environment modules: {}".format(env_modules))
+            logger.info(f"Activating environment modules: {env_modules}")
 
         if conda_env:
             if ON_WINDOWS and not cls.get_executable():
@@ -209,10 +209,10 @@ class shell:
                 container_workdir=shadow_dir,
                 is_python_script=context.get("is_python_script", False),
             )
-            logger.info("Activating singularity image {}".format(container_img))
+            logger.info(f"Activating singularity image {container_img}")
         if conda_env:
             logger.info(
-                "Activating conda environment: {}".format(os.path.relpath(conda_env))
+                f"Activating conda environment: {os.path.relpath(conda_env)}"
             )
 
         tmpdir_resource = resources.get("tmpdir", None)

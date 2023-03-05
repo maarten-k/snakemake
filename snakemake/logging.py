@@ -150,7 +150,7 @@ class WMSLogger:
         )
         if response.status_code != 200:
             sys.stderr.write(
-                "Problem with server: {} {}".format(self.address, os.linesep)
+                f"Problem with server: {self.address} {os.linesep}"
             )
             sys.exit(-1)
 
@@ -343,7 +343,7 @@ class Logger:
     def logfile_hint(self):
         if self.mode == Mode.default and not self.dryrun:
             logfile = self.get_logfile()
-            self.info("Complete log: {}".format(os.path.relpath(logfile)))
+            self.info(f"Complete log: {os.path.relpath(logfile)}")
 
     def location(self, msg):
         callerframerecord = inspect.stack()[1]
@@ -432,7 +432,7 @@ class Logger:
             def format_item(item, omit=None, valueformat=str):
                 value = msg[item]
                 if value != omit:
-                    return "    {}: {}".format(item, valueformat(value))
+                    return f"    {item}: {valueformat(value)}"
 
             yield "{}{} {}:".format(
                 "local" if msg["local"] else "",
@@ -491,7 +491,7 @@ class Logger:
                 return item
 
         def timestamp():
-            self.logger.info(indent("[{}]".format(time.asctime())))
+            self.logger.info(indent(f"[{time.asctime()}]"))
 
         level = msg["level"]
 
@@ -651,7 +651,7 @@ def format_dict(dict_like, omit_keys=None, omit_values=None):
             "bug: format_dict applied to something neither a dict nor a Namedlist"
         )
     return ", ".join(
-        "{}={}".format(name, str(value))
+        f"{name}={str(value)}"
         for name, value in items
         if name not in omit_keys and value not in omit_values
     )

@@ -682,7 +682,7 @@ class Job(AbstractJob):
                 if f in requested:
                     if f in self.dynamic_output:
                         if not self.expand_dynamic(f_):
-                            yield "{} (dynamic)".format(f_)
+                            yield f"{f_} (dynamic)"
                     else:
                         yield from handle_file(f)
         else:
@@ -1277,7 +1277,7 @@ class GroupJob(AbstractJob):
             yield from layer
 
     def __repr__(self):
-        return "JobGroup({},{})".format(self.groupid, repr(self.jobs))
+        return f"JobGroup({self.groupid},{repr(self.jobs)})"
 
     def __contains__(self, job):
         return job in self.jobs
@@ -1531,11 +1531,11 @@ class GroupJob(AbstractJob):
             return format(string, **_variables)
         except NameError as ex:
             raise WorkflowError(
-                "NameError with group job {}: {}".format(self.jobid, str(ex))
+                f"NameError with group job {self.jobid}: {str(ex)}"
             )
         except IndexError as ex:
             raise WorkflowError(
-                "IndexError with group job {}: {}".format(self.jobid, str(ex))
+                f"IndexError with group job {self.jobid}: {str(ex)}"
             )
         except Exception as ex:
             raise WorkflowError(

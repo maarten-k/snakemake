@@ -200,7 +200,7 @@ class Rule:
             # perform the partial expansion from f's string representation
             s = str(f).replace("{", "{{").replace("}", "}}")
             for key in wildcards.keys():
-                s = s.replace("{{{{{}}}}}".format(key), "{{{}}}".format(key))
+                s = s.replace(f"{{{{{key}}}}}", f"{{{key}}}")
             # build result
             anno_s = AnnotatedString(s)
             anno_s.flags = f.flags
@@ -1208,13 +1208,13 @@ class Rule:
             return False
         except sre_constants.error as ex:
             raise IOFileException(
-                "{} in wildcard statement".format(ex),
+                f"{ex} in wildcard statement",
                 snakefile=self.snakefile,
                 lineno=self.lineno,
             )
         except ValueError as ex:
             raise IOFileException(
-                "{}".format(ex), snakefile=self.snakefile, lineno=self.lineno
+                f"{ex}", snakefile=self.snakefile, lineno=self.lineno
             )
 
     def get_wildcards(self, requested_output, wildcards_dict=None):
