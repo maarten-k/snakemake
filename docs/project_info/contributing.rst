@@ -219,11 +219,28 @@ The easiest way to run your development version of Snakemake is perhaps to go to
 
 This will make your development version of Snakemake the one called when running snakemake. You do not need to run this command after each time you make code changes.
 
-From the base snakemake folder you call :code:`pytest` to run all the tests, or choose one specific test. 
+
+
+From the base snakemake folder you can run all local test(non cloud). You need also to install:
+
+- r-base
+- singularity or apptainer
+- stress
+- cargo
+- docker
+- mamba install moto==3.0.2 (tests/tests.py::test_default_remote  uses interal api of moto which is changed)
+
 
 .. code-block:: console
 
-   $ pytest
+    $ pytest -v -x tests/test_expand.py tests/test_io.py tests/test_schema.py tests/test_linting.py tests/tests.py tests/test_schema.py tests/test_linting.py tests/tests.py
+    
+    
+or choose one specific test. 
+
+.. code-block:: console
+
+
    $ pytest tests/tests.py::test_validate
 
 If you introduce a new feature you should add a new test to the tests directory. See the folder for examples.
