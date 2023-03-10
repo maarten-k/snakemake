@@ -391,6 +391,7 @@ def test_remote():
 @skip_on_windows
 def test_cluster_sync():
     os.environ["TESTVAR"] = "test"
+    os.environ["TESTVAR2"] = "test"
     run(dpath("test14"), snakefile="Snakefile.nonstandard", cluster_sync="./qsub")
 
 
