@@ -9,6 +9,7 @@ import signal
 import marshal
 import pickle
 import json
+import stat
 import tempfile
 import time
 from base64 import urlsafe_b64encode, b64encode
@@ -135,10 +136,7 @@ class Persistence:
                             self._metadata_path
                         )
                         os.makedirs(target_path, exist_ok=True)
-                        shutil.copyfile(
-                            path / filename,
-                            target_path / filename,
-                        )
+                        shutil.copyfile(path / filename, target_path / filename)
                 i += 1
                 # this can take a while for large folders...
                 if (i % 10000) == 0 and i > 0:
@@ -249,11 +247,7 @@ class Persistence:
 
     def started(self, job, external_jobid=None):
         for f in job.output:
-            self._record(
-                self._incomplete_path,
-                {"external_jobid": external_jobid},
-                f,
-            )
+            self._record(self._incomplete_path, {"external_jobid": external_jobid}, f)
 
     def finished(self, job, keep_metadata=True):
         if not keep_metadata:
@@ -456,7 +450,7 @@ class Persistence:
     @lru_cache()
     def _input(self, job):
         get_path = (
-            lambda f: get_flag_value(f, "sourcecache_entry").get_path_or_uri()
+            lambda f: get_flag_value(f, "sourcecache_entry")
             if is_flagged(f, "sourcecache_entry")
             else f
         )
@@ -528,6 +522,10 @@ class Persistence:
             suffix=f".{os.path.basename(recpath)[:8]}",
         ) as tmpfile:
             json.dump(json_value, tmpfile)
+        # ensure read and write permissions for user and group
+        os.chmod(
+            tmpfile.name, stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IWGRP
+        )
         os.replace(tmpfile.name, recpath)
 
     def _delete_record(self, subject, id):
