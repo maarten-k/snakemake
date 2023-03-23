@@ -1099,7 +1099,9 @@ class Job(AbstractJob):
         wait_for_files = []
         wait_for_files.extend(self.local_input)
         wait_for_files.extend(
-            f for f in self.remote_input if not f.should_stay_on_remote
+            f
+            for f in self.remote_input
+            if not f.should_stay_on_remote or not f.download_on_workernode
         )
 
         if self.shadow_dir:
