@@ -31,12 +31,12 @@ class RemoteProvider(AbstractRemoteProvider):
     def __init__(
         self, *args, keep_local=False, stay_on_remote=False, is_default=False, **kwargs
     ):
-        super(RemoteProvider, self).__init__(
+        super().__init__(
             *args,
             keep_local=keep_local,
             stay_on_remote=stay_on_remote,
             is_default=is_default,
-            **kwargs
+            **kwargs,
         )
 
     @property
@@ -55,9 +55,7 @@ class RemoteProvider(AbstractRemoteProvider):
         elif isinstance(value, collections.abc.Iterable):
             values = value
         else:
-            raise TypeError(
-                "Invalid type ({}) passed to remote: {}".format(type(value), value)
-            )
+            raise TypeError(f"Invalid type ({type(value)}) passed to remote: {value}")
 
         for i, file in enumerate(values):
             match = re.match("^(https?)://.+", file)
@@ -77,7 +75,7 @@ class RemoteProvider(AbstractRemoteProvider):
                 else:
                     values[i] = "https://" + file
 
-        return super(RemoteProvider, self).remote(values, *args, **kwargs)
+        return super().remote(values, *args, **kwargs)
 
 
 class RemoteObject(DomainObject):
@@ -90,14 +88,14 @@ class RemoteObject(DomainObject):
         provider=None,
         additional_request_string="",
         allow_redirects=True,
-        **kwargs
+        **kwargs,
     ):
-        super(RemoteObject, self).__init__(
+        super().__init__(
             *args,
             keep_local=keep_local,
             provider=provider,
             allow_redirects=allow_redirects,
-            **kwargs
+            **kwargs,
         )
         self.additional_request_string = additional_request_string
 
@@ -175,7 +173,7 @@ class RemoteObject(DomainObject):
         if self.exists():
             with self.httpr(verb="HEAD") as httpr:
                 file_mtime = self.get_header_item(httpr, "last-modified", default=None)
-                logger.debug("HTTP last-modified: {}".format(file_mtime))
+                logger.debug(f"HTTP last-modified: {file_mtime}")
 
                 epochTime = 0
 

@@ -37,7 +37,7 @@ class RemoteProvider(AbstractRemoteProvider):
         url_decorator=lambda x: x,
         **kwargs,
     ):
-        super(RemoteProvider, self).__init__(
+        super().__init__(
             *args,
             keep_local=keep_local,
             stay_on_remote=stay_on_remote,
@@ -80,7 +80,7 @@ class RemoteObject(AbstractRemoteRetryObject):
         url_decorator=lambda x: x,
         **kwargs,
     ):
-        super(RemoteObject, self).__init__(
+        super().__init__(
             *args,
             keep_local=keep_local,
             stay_on_remote=stay_on_remote,
@@ -139,7 +139,7 @@ class RemoteObject(AbstractRemoteRetryObject):
         self._xrd.remove(self.remote_file())
 
 
-class XRootDHelper(object):
+class XRootDHelper:
     def __init__(self, url_decorator=lambda x: x):
         self._clients = {}
         self._url_decorator = url_decorator
@@ -153,7 +153,7 @@ class XRootDHelper(object):
 
     def _parse_url(self, url):
         match = re.search(
-            "(?P<domain>(?:[A-Za-z]+://)[A-Za-z0-9:@\_\-\.]+\:?/)(?P<path>.+)", url
+            r"(?P<domain>(?:[A-Za-z]+://)[A-Za-z0-9:@\_\-\.]+\:?/)(?P<path>.+)", url
         )
         if match is None:
             return None
@@ -327,10 +327,9 @@ class XRootDHelper(object):
         filename = join(dirname, filename)
         for f in self.list_directory(domain, dirname):
             if f.statinfo.flags & StatInfoFlags.IS_DIR:
-                for _f_name in self.list_directory_recursive(
+                yield from self.list_directory_recursive(
                     domain + dirname + f.name + "/"
-                ):
-                    yield _f_name
+                )
             else:
                 # Only yield files as directories don't have timestamps on XRootD
                 yield domain + dirname + f.name

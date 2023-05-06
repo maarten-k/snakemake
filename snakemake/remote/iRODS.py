@@ -71,7 +71,7 @@ class RemoteProvider(AbstractRemoteProvider):
     def __init__(
         self, *args, keep_local=False, stay_on_remote=False, is_default=False, **kwargs
     ):
-        super(RemoteProvider, self).__init__(
+        super().__init__(
             *args,
             keep_local=keep_local,
             stay_on_remote=stay_on_remote,
@@ -102,9 +102,7 @@ class RemoteObject(AbstractRemoteRetryObject):
     """This is a class to interact with an iRODS server."""
 
     def __init__(self, *args, keep_local=False, provider=None, **kwargs):
-        super(RemoteObject, self).__init__(
-            *args, keep_local=keep_local, provider=provider, **kwargs
-        )
+        super().__init__(*args, keep_local=keep_local, provider=provider, **kwargs)
         if provider:
             self._irods_session = provider.remote_interface()
             self._timezone = provider.kwargs.get("timezone")

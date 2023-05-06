@@ -33,12 +33,12 @@ class RemoteProvider(AbstractRemoteProvider):
     def __init__(
         self, *args, keep_local=False, stay_on_remote=False, is_default=False, **kwargs
     ):
-        super(RemoteProvider, self).__init__(
+        super().__init__(
             *args,
             keep_local=keep_local,
             stay_on_remote=stay_on_remote,
             is_default=is_default,
-            **kwargs
+            **kwargs,
         )
 
     @property
@@ -57,9 +57,7 @@ class RemoteProvider(AbstractRemoteProvider):
         elif isinstance(value, collections.abc.Iterable):
             values = value
         else:
-            raise TypeError(
-                "Invalid type ({}) passed to remote: {}".format(type(value), value)
-            )
+            raise TypeError(f"Invalid type ({type(value)}) passed to remote: {value}")
 
         for i, file in enumerate(values):
             match = re.match("^(ftps?)://.+", file)
@@ -100,13 +98,11 @@ class RemoteObject(PooledDomainObject):
         keep_local=False,
         provider=None,
         encrypt_data_channel=False,
-        **kwargs
+        **kwargs,
     ):
         # just save to kwargs, but leave in function def so it's explicit
         kwargs["encrypt_data_channel"] = encrypt_data_channel
-        super(RemoteObject, self).__init__(
-            *args, keep_local=keep_local, provider=provider, **kwargs
-        )
+        super().__init__(*args, keep_local=keep_local, provider=provider, **kwargs)
 
     # === Implementations of abstract class members ===
 

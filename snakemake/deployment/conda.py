@@ -128,7 +128,7 @@ class Env:
             from snakemake.shell import shell
 
             content = shell.check_output(
-                "conda env export {}".format(self.address_argument),
+                f"conda env export {self.address_argument}",
                 stderr=subprocess.STDOUT,
                 text=True,
             )
@@ -253,9 +253,9 @@ class Env:
     @property
     def address_argument(self):
         if self.is_named:
-            return "--name '{}'".format(self.address)
+            return f"--name '{self.address}'"
         else:
-            return "--prefix '{}'".format(self.address)
+            return f"--prefix '{self.address}'"
 
     @property
     def archive_file(self):
@@ -293,7 +293,7 @@ class Env:
             os.makedirs(env_archive, exist_ok=True)
             try:
                 out = shell.check_output(
-                    "conda list --explicit {}".format(self.address_argument),
+                    f"conda list --explicit {self.address_argument}",
                     stderr=subprocess.STDOUT,
                     text=True,
                 )
@@ -322,14 +322,14 @@ class Env:
                                 tarfile.open(pkg_path)
                         except:
                             raise WorkflowError(
-                                "Package is invalid tar/zip archive: {}".format(pkg_url)
+                                f"Package is invalid tar/zip archive: {pkg_url}"
                             )
         except (
             requests.exceptions.ChunkedEncodingError,
             requests.exceptions.HTTPError,
         ) as e:
             shutil.rmtree(env_archive)
-            raise WorkflowError("Error downloading conda package {}.".format(pkg_url))
+            raise WorkflowError(f"Error downloading conda package {pkg_url}.")
         except (Exception, BaseException) as e:
             shutil.rmtree(env_archive)
             raise e
@@ -353,7 +353,7 @@ class Env:
 
         # Determine interpreter from shebang or use sh as default.
         interpreter = "sh"
-        with open(deploy_file, "r") as f:
+        with open(deploy_file) as f:
             first_line = next(iter(f))
             if first_line.startswith("#!"):
                 interpreter = first_line[2:].strip()
@@ -412,7 +412,7 @@ class Env:
                     shell.check_output(
                         singularity.shellcmd(
                             self._container_img.path,
-                            "[ -d '{}' ]".format(env_path),
+                            f"[ -d '{env_path}' ]",
                             args=self._singularity_args,
                             envvars=self.get_singularity_envvars(),
                             quiet=True,
@@ -460,9 +460,7 @@ class Env:
                     )
                 )
                 return env_path
-            logger.info(
-                "Creating conda environment {}...".format(self.file.simplify_path())
-            )
+            logger.info(f"Creating conda environment {self.file.simplify_path()}...")
             env_archive = self.archive_file
             try:
                 # Touch "start" flag file
@@ -494,7 +492,7 @@ class Env:
                             "--quiet",
                             "--no-shortcuts" if ON_WINDOWS else "",
                             "--yes",
-                            "--prefix '{}'".format(env_path),
+                            f"--prefix '{env_path}'",
                         ]
                         + packages
                     )
@@ -536,8 +534,8 @@ class Env:
                             + [
                                 "create",
                                 "--quiet",
-                                '--file "{}"'.format(target_env_file),
-                                '--prefix "{}"'.format(env_path),
+                                f'--file "{target_env_file}"',
+                                f'--prefix "{env_path}"',
                             ]
                             + yes_flag
                         )
@@ -620,7 +618,7 @@ class Env:
 
     @classmethod
     def get_singularity_envvars(self):
-        return {"CONDA_PKGS_DIRS": "/tmp/conda/{}".format(uuid.uuid4())}
+        return {"CONDA_PKGS_DIRS": f"/tmp/conda/{uuid.uuid4()}"}
 
     def __hash__(self):
         # this hash is only for object comparison, not for env paths
@@ -760,7 +758,7 @@ class Conda:
         version = shell.check_output(
             self._get_cmd("conda --version"), stderr=subprocess.PIPE, text=True
         )
-        version_matches = re.findall("\d+.\d+.\d+", version)
+        version_matches = re.findall(r"\d+.\d+.\d+", version)
         if len(version_matches) != 1:
             raise WorkflowError(
                 f"Unable to determine conda version. 'conda --version' returned {version}"
@@ -769,7 +767,7 @@ class Conda:
             version = version_matches[0]
         if StrictVersion(version) < StrictVersion("4.2"):
             raise CreateCondaEnvironmentException(
-                "Conda must be version 4.2 or later, found version {}.".format(version)
+                f"Conda must be version 4.2 or later, found version {version}."
             )
 
     def _check_condarc(self):
@@ -808,7 +806,7 @@ class Conda:
             activate = activate.replace("\\", "/")
             env_address = env_address.replace("\\", "/")
 
-        return "source {} '{}'; {}".format(activate, env_address, cmd)
+        return f"source {activate} '{env_address}'; {cmd}"
 
     def shellcmd_win(self, env_address, cmd):
         """Prepend the windows activate bat script."""
@@ -816,7 +814,7 @@ class Conda:
         activate = os.path.join(self.bin_path(), "activate.bat").replace("\\", "/")
         env_address = env_address.replace("\\", "/")
 
-        return '"{}" "{}"&&{}'.format(activate, env_address, cmd)
+        return f'"{activate}" "{env_address}"&&{cmd}'
 
 
 def is_mamba_available():

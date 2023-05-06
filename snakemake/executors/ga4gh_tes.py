@@ -56,7 +56,7 @@ class TaskExecutionServiceExecutor(ClusterExecutor):
             password=os.environ.get("FUNNEL_SERVER_PASSWORD"),
         )
 
-        logger.info("[TES] Job execution on TES: {url}".format(url=self.tes_url))
+        logger.info(f"[TES] Job execution on TES: {self.tes_url}")
 
         super().__init__(
             workflow,
@@ -84,7 +84,7 @@ class TaskExecutionServiceExecutor(ClusterExecutor):
         for job in self.active_jobs:
             try:
                 self.tes_client.cancel_task(job.jobid)
-                logger.info("[TES] Task canceled: {id}".format(id=job.jobid))
+                logger.info(f"[TES] Task canceled: {job.jobid}")
             except Exception:
                 logger.info(
                     "[TES] Canceling task failed. This may be because the job is "
@@ -102,7 +102,7 @@ class TaskExecutionServiceExecutor(ClusterExecutor):
         try:
             task = self._get_task(job, jobscript)
             tes_id = self.tes_client.create_task(task)
-            logger.info("[TES] Task submitted: {id}".format(id=tes_id))
+            logger.info(f"[TES] Task submitted: {tes_id}")
         except Exception as e:
             raise WorkflowError(str(e))
 
@@ -137,10 +137,10 @@ class TaskExecutionServiceExecutor(ClusterExecutor):
                     if res.state in UNFINISHED_STATES:
                         still_running.append(j)
                     elif res.state in ERROR_STATES:
-                        logger.info("[TES] Task errored: {id}".format(id=j.jobid))
+                        logger.info(f"[TES] Task errored: {j.jobid}")
                         j.error_callback(j.job)
                     elif res.state == "COMPLETE":
-                        logger.info("[TES] Task completed: {id}".format(id=j.jobid))
+                        logger.info(f"[TES] Task completed: {j.jobid}")
                         j.callback(j.job)
 
             async with async_lock(self.lock):
@@ -320,5 +320,5 @@ class TaskExecutionServiceExecutor(ClusterExecutor):
             task["resources"]["disk_gb"] = job.resources["disk_mb"] / 1000
 
         tes_task = tes.Task(**task)
-        logger.debug("[TES] Built task: {task}".format(task=tes_task))
+        logger.debug(f"[TES] Built task: {tes_task}")
         return tes_task

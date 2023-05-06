@@ -89,8 +89,7 @@ def validate(data, schema, set_default=True):
                 if "default" in subschema:
                     instance.setdefault(property, subschema["default"])
 
-            for error in validate_properties(validator, properties, instance, schema):
-                yield error
+            yield from validate_properties(validator, properties, instance, schema)
 
         return validators.extend(validator_class, {"properties": set_defaults})
 
@@ -125,7 +124,7 @@ def validate(data, schema, set_default=True):
                             jsonschema.validate(record, schema, resolver=resolver)
                     except jsonschema.exceptions.ValidationError as e:
                         raise WorkflowError(
-                            "Error validating row {} of data frame.".format(i), e
+                            f"Error validating row {i} of data frame.", e
                         )
                 if set_default:
                     newdata = pd.DataFrame(recordlist, data.index)
@@ -337,7 +336,7 @@ class SequenceFormatter(string.Formatter):
     def format_field(self, value, format_spec):
         if isinstance(value, Wildcards):
             return ",".join(
-                "{}={}".format(name, value)
+                f"{name}={value}"
                 for name, value in sorted(value.items(), key=lambda item: item[0])
             )
         if isinstance(value, (list, tuple, set, frozenset)):
@@ -522,7 +521,7 @@ def available_cpu_count():
             res = bin(int(m.group(1).replace(",", ""), 16)).count("1")
             if res > 0:
                 return min(res, multiprocessing.cpu_count())
-    except IOError:
+    except OSError:
         pass
 
     return multiprocessing.cpu_count()
@@ -667,7 +666,7 @@ class Paramspace:
             if isinstance(filename_params, str) and filename_params == "*":
                 filename_params = dataframe.columns
 
-            if any((param not in dataframe.columns for param in filename_params)):
+            if any(param not in dataframe.columns for param in filename_params):
                 raise KeyError(
                     "One or more entries of filename_params are not valid coulumn names for the param file."
                 )

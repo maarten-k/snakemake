@@ -27,7 +27,7 @@ class PathModifier:
             import datrie
 
             self.trie = datrie.Trie(
-                "".join(set(char for prefix in replace_prefix for char in prefix))
+                "".join({char for prefix in replace_prefix for char in prefix})
             )
             for prefix, replacement in replace_prefix.items():
                 self.trie[prefix] = replacement
@@ -106,7 +106,7 @@ class PathModifier:
             return path
 
         # This will convert any AnnotatedString to str
-        fullpath = "{}/{}".format(self.workflow.default_remote_prefix, path)
+        fullpath = f"{self.workflow.default_remote_prefix}/{path}"
         fullpath = os.path.normpath(fullpath)
         remote = self.workflow.default_remote_provider.remote(fullpath)
         return remote

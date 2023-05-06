@@ -52,18 +52,18 @@ class Image:
         if self.is_local:
             return
         if dryrun:
-            logger.info("Singularity image {} will be pulled.".format(self.url))
+            logger.info(f"Singularity image {self.url} will be pulled.")
             return
-        logger.debug("Singularity image location: {}".format(self.path))
+        logger.debug(f"Singularity image location: {self.path}")
         if not os.path.exists(self.path):
-            logger.info("Pulling singularity image {}.".format(self.url))
+            logger.info(f"Pulling singularity image {self.url}.")
             try:
                 p = subprocess.check_output(
                     [
                         "singularity",
                         "pull",
                         "--name",
-                        "{}.simg".format(self.hash),
+                        f"{self.hash}.simg",
                         self.url,
                     ],
                     cwd=self._img_dir,
@@ -102,9 +102,7 @@ def shellcmd(
     and environment variables to be passed."""
 
     if envvars:
-        envvars = " ".join(
-            "SINGULARITYENV_{}={}".format(k, v) for k, v in envvars.items()
-        )
+        envvars = " ".join(f"SINGULARITYENV_{k}={v}" for k, v in envvars.items())
     else:
         envvars = ""
 
@@ -117,10 +115,10 @@ def shellcmd(
 
     if is_python_script:
         # mount host snakemake module into container
-        args += " --bind {}:{}".format(SNAKEMAKE_SEARCHPATH, SNAKEMAKE_MOUNTPOINT)
+        args += f" --bind {SNAKEMAKE_SEARCHPATH}:{SNAKEMAKE_MOUNTPOINT}"
 
     if container_workdir:
-        args += " --pwd {}".format(container_workdir)
+        args += f" --pwd {container_workdir}"
 
     cmd = "{} singularity {} exec --home {} {} {} {} -c '{}'".format(
         envvars,
@@ -171,7 +169,7 @@ class Singularity:
                 ).decode()
             except subprocess.CalledProcessError as e:
                 raise WorkflowError(
-                    "Failed to get singularity version:\n{}".format(e.stderr.decode())
+                    f"Failed to get singularity version:\n{e.stderr.decode()}"
                 )
             if v.startswith("apptainer"):
                 v = v.rsplit(" ", 1)[-1]

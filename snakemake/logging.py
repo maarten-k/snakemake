@@ -149,9 +149,7 @@ class WMSLogger:
             self.address + "/api/service-info", headers=self._headers
         )
         if response.status_code != 200:
-            sys.stderr.write(
-                "Problem with server: {} {}".format(self.address, os.linesep)
-            )
+            sys.stderr.write(f"Problem with server: {self.address} {os.linesep}")
             sys.exit(-1)
 
         # And then that it's ready to be interacted with
@@ -252,7 +250,7 @@ class WMSLogger:
 
             # For an exception, return the name and a message
             elif key == "exception":
-                result[key] = "%s: %s" % (
+                result[key] = "{}: {}".format(
                     msg["exception"].__class__.__name__,
                     msg["exception"] or "Exception",
                 )
@@ -343,7 +341,7 @@ class Logger:
     def logfile_hint(self):
         if self.mode == Mode.default and not self.dryrun:
             logfile = self.get_logfile()
-            self.info("Complete log: {}".format(os.path.relpath(logfile)))
+            self.info(f"Complete log: {os.path.relpath(logfile)}")
 
     def location(self, msg):
         callerframerecord = inspect.stack()[1]
@@ -432,7 +430,7 @@ class Logger:
             def format_item(item, omit=None, valueformat=str):
                 value = msg[item]
                 if value != omit:
-                    return "    {}: {}".format(item, valueformat(value))
+                    return f"    {item}: {valueformat(value)}"
 
             yield "{}{} {}:".format(
                 "local" if msg["local"] else "",
@@ -468,7 +466,7 @@ class Logger:
         def show_logs(logs):
             for f in logs:
                 try:
-                    content = open(f, "r").read()
+                    content = open(f).read()
                 except FileNotFoundError:
                     yield f"Logfile {f} not found."
                     return
@@ -492,7 +490,7 @@ class Logger:
                 return item
 
         def timestamp():
-            self.logger.info(indent("[{}]".format(time.asctime())))
+            self.logger.info(indent(f"[{time.asctime()}]"))
 
         level = msg["level"]
 
@@ -652,7 +650,7 @@ def format_dict(dict_like, omit_keys=None, omit_values=None):
             "bug: format_dict applied to something neither a dict nor a Namedlist"
         )
     return ", ".join(
-        "{}={}".format(name, str(value))
+        f"{name}={str(value)}"
         for name, value in items
         if name not in omit_keys and value not in omit_values
     )
@@ -703,7 +701,7 @@ def setup_logger(
         quiet = set()
     elif isinstance(quiet, bool):
         if quiet:
-            quiet = set(["progress", "rules"])
+            quiet = {"progress", "rules"}
         else:
             quiet = set()
     elif isinstance(quiet, list):

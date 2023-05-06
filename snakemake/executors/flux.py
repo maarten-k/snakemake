@@ -90,7 +90,7 @@ class FluxExecutor(ClusterExecutor):
 
     def _get_jobname(self, job):
         # Use a dummy job name (human readable and also namespaced)
-        return "snakejob-%s-%s-%s" % (self.run_namespace, job.name, job.jobid)
+        return "snakejob-{}-{}-{}".format(self.run_namespace, job.name, job.jobid)
 
     def run(self, job, callback=None, submit_callback=None, error_callback=None):
         """
@@ -155,7 +155,7 @@ class FluxExecutor(ClusterExecutor):
 
             # Loop through active jobs and act on status
             for j in active_jobs:
-                logger.debug("Checking status for job {}".format(j.jobid))
+                logger.debug(f"Checking status for job {j.jobid}")
                 if j.flux_future.done():
                     # The exit code can help us determine if the job was successful
                     try:

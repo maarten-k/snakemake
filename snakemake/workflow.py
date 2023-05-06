@@ -415,7 +415,7 @@ class Workflow:
         is_overwrite = self.is_rule(name)
         if not allow_overwrite and is_overwrite:
             raise CreateRuleException(
-                "The name {} is already used by another rule".format(name),
+                f"The name {name} is already used by another rule",
                 lineno=lineno,
                 snakefile=snakefile,
             )
@@ -457,9 +457,9 @@ class Workflow:
             logger.rule_info(name=rule.name, docstring=rule.docstring)
 
     def list_resources(self):
-        for resource in set(
+        for resource in {
             resource for rule in self.rules for resource in rule.resources
-        ):
+        }:
             if resource not in "_cores _nodes".split():
                 logger.info(resource)
 
@@ -469,7 +469,7 @@ class Workflow:
         )
 
     def check_localrules(self):
-        undefined = self._localrules - set(rule.name for rule in self.rules)
+        undefined = self._localrules - {rule.name for rule in self.rules}
         if undefined:
             logger.warning(
                 "localrules directive specifies rules that are not "
@@ -641,7 +641,7 @@ class Workflow:
         targetfiles = set(chain(files(targets), priorityfiles, forcefiles, untilfiles))
 
         if ON_WINDOWS:
-            targetfiles = set(tf.replace(os.sep, os.altsep) for tf in targetfiles)
+            targetfiles = {tf.replace(os.sep, os.altsep) for tf in targetfiles}
 
         if forcetargets:
             forcefiles.update(targetfiles)
@@ -657,7 +657,7 @@ class Workflow:
                 snakemake.io.wait_for_files(
                     wait_for_files, latency_wait=self.latency_wait
                 )
-            except IOError as e:
+            except OSError as e:
                 logger.error(str(e))
                 return False
 
@@ -734,7 +734,7 @@ class Workflow:
                 self.persistence.cleanup_locks()
                 logger.info("Unlocking working directory.")
                 return True
-            except IOError:
+            except OSError:
                 logger.error(
                     "Error: Unlocking the directory {} failed. Maybe "
                     "you don't have the permissions?"
@@ -777,7 +777,7 @@ class Workflow:
                 )
                 updated = list()
                 if subworkflow_targets:
-                    logger.info("Executing subworkflow {}.".format(subworkflow.name))
+                    logger.info(f"Executing subworkflow {subworkflow.name}.")
                     if not subsnakemake(
                         subworkflow.snakefile,
                         workdir=subworkflow.workdir,
@@ -936,7 +936,7 @@ class Workflow:
 
         if list_conda_envs:
             print("environment", "container", "location", sep="\t")
-            for env in set(job.conda_env for job in dag.jobs):
+            for env in {job.conda_env for job in dag.jobs}:
                 if env and not env.is_named:
                     print(
                         env.file.simplify_path(),
@@ -1005,13 +1005,11 @@ class Workflow:
             if len(dag):
                 shell_exec = shell.get_executable()
                 if shell_exec is not None:
-                    logger.info("Using shell: {}".format(shell_exec))
+                    logger.info(f"Using shell: {shell_exec}")
                 if cluster or cluster_sync or drmaa:
-                    logger.resources_info(
-                        "Provided cluster nodes: {}".format(self.nodes)
-                    )
+                    logger.resources_info(f"Provided cluster nodes: {self.nodes}")
                 elif kubernetes or tibanna or google_lifesciences:
-                    logger.resources_info("Provided cloud nodes: {}".format(self.nodes))
+                    logger.resources_info(f"Provided cloud nodes: {self.nodes}")
                 else:
                     if self._cores is not None:
                         warning = (
@@ -1019,9 +1017,7 @@ class Workflow:
                             if self._cores > 1
                             else " (use --cores to define parallelism)"
                         )
-                        logger.resources_info(
-                            "Provided cores: {}{}".format(self._cores, warning)
-                        )
+                        logger.resources_info(f"Provided cores: {self._cores}{warning}")
                         logger.resources_info(
                             "Rules claiming more threads " "will be scaled down."
                         )
@@ -1080,7 +1076,7 @@ class Workflow:
                 logger.info(
                     "Rules with provenance triggered jobs: "
                     + ",".join(
-                        sorted(set(job.rule.name for job in provenance_triggered_jobs))
+                        sorted({job.rule.name for job in provenance_triggered_jobs})
                     )
                 )
                 logger.info("")
@@ -1181,14 +1177,14 @@ class Workflow:
         invalid_envvars = [
             envvar
             for envvar in envvars
-            if re.match("^\w+$", envvar, flags=re.ASCII) is None
+            if re.match(r"^\w+$", envvar, flags=re.ASCII) is None
         ]
         if invalid_envvars:
             raise WorkflowError(
                 f"Invalid environment variables requested: {', '.join(map(repr, invalid_envvars))}. "
                 "Environment variable names may only contain alphanumeric characters and the underscore. "
             )
-        undefined = set(var for var in envvars if var not in os.environ)
+        undefined = {var for var in envvars if var not in os.environ}
         if self.check_envvars and undefined:
             raise WorkflowError(
                 "The following environment variables are requested by the workflow but undefined. "
@@ -1211,7 +1207,7 @@ class Workflow:
         snakefile = infer_source_file(snakefile, basedir)
 
         if not self.modifier.allow_rule_overwrite and snakefile in self.included:
-            logger.info("Multiple includes of {} ignored".format(snakefile))
+            logger.info(f"Multiple includes of {snakefile} ignored")
             return
         self.included.append(snakefile)
         self.included_stack.append(snakefile)
@@ -1266,13 +1262,13 @@ class Workflow:
         self._scatter.update(self.overwrite_scatter)
 
         # add corresponding wildcard constraint
-        self.global_wildcard_constraints(scatteritem="\d+-of-\d+")
+        self.global_wildcard_constraints(scatteritem=r"\d+-of-\d+")
 
         def func(key, *args, **wildcards):
             n = self._scatter[key]
             return expand(
                 *args,
-                scatteritem=map("{{}}-of-{}".format(n).format, range(1, n + 1)),
+                scatteritem=map(f"{{}}-of-{n}".format, range(1, n + 1)),
                 **wildcards,
             )
 
@@ -1642,7 +1638,7 @@ class Workflow:
             if ruleinfo.localrule is True:
                 self._localrules.add(rule.name)
 
-            ruleinfo.func.__name__ = "__{}".format(rule.name)
+            ruleinfo.func.__name__ = f"__{rule.name}"
             self.globals[ruleinfo.func.__name__] = ruleinfo.func
 
             rule_proxy = RuleProxy(rule)

@@ -24,9 +24,7 @@ ZenFileInfo = namedtuple(
 
 class RemoteProvider(AbstractRemoteProvider):
     def __init__(self, *args, stay_on_remote=False, **kwargs):
-        super(RemoteProvider, self).__init__(
-            *args, stay_on_remote=stay_on_remote, **kwargs
-        )
+        super().__init__(*args, stay_on_remote=stay_on_remote, **kwargs)
         self._zen = ZENHelper(*args, **kwargs)
 
     def remote_interface(self):
@@ -45,7 +43,7 @@ class RemoteObject(AbstractRemoteRetryObject):
     def __init__(
         self, *args, keep_local=False, stay_on_remote=False, provider=None, **kwargs
     ):
-        super(RemoteObject, self).__init__(
+        super().__init__(
             *args,
             keep_local=keep_local,
             stay_on_remote=stay_on_remote,
@@ -91,13 +89,13 @@ class RemoteObject(AbstractRemoteRetryObject):
 
         if local_md5 != stats.checksum:
             raise ZenodoFileException(
-                "File checksums do not match for remote file: {}".format(stats.filename)
+                f"File checksums do not match for remote file: {stats.filename}"
             )
 
     def _upload(self):
         with open(self.local_file(), "rb") as lf:
             self._zen._api_request(
-                self._zen.bucket + "/{}".format(os.path.basename(self.remote_file())),
+                self._zen.bucket + f"/{os.path.basename(self.remote_file())}",
                 method="PUT",
                 data=lf,
             )
@@ -111,7 +109,7 @@ class RemoteObject(AbstractRemoteRetryObject):
         return self.local_file()
 
 
-class ZENHelper(object):
+class ZENHelper:
     def __init__(self, *args, **kwargs):
         try:
             self._access_token = kwargs.pop("access_token")
@@ -160,7 +158,7 @@ class ZENHelper(object):
         # Create a session with a hook to raise error on bad request.
         session = requests.Session()
         session.hooks = {"response": lambda r, *args, **kwargs: r.raise_for_status()}
-        session.headers["Authorization"] = "Bearer {}".format(self._access_token)
+        session.headers["Authorization"] = f"Bearer {self._access_token}"
         session.headers.update(headers)
 
         cookies = self.restricted_access_cookies if restricted_access else None
@@ -193,7 +191,7 @@ class ZENHelper(object):
     def bucket(self):
         if self._bucket is None:
             resp = self._api_request(
-                self._baseurl + "/api/deposit/depositions/{}".format(self.deposition),
+                self._baseurl + f"/api/deposit/depositions/{self.deposition}",
                 headers={"Content-Type": "application/json"},
                 json=True,
             )
@@ -208,7 +206,7 @@ class ZENHelper(object):
 
     def get_files_own_deposition(self):
         files = self._api_request(
-            self._baseurl + "/api/deposit/depositions/{}/files".format(self.deposition),
+            self._baseurl + f"/api/deposit/depositions/{self.deposition}/files",
             headers={"Content-Type": "application/json"},
             json=True,
         )

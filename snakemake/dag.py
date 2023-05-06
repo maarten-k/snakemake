@@ -94,7 +94,7 @@ class Batch:
         return self.idx == self.batches
 
     def __str__(self):
-        return "{}/{} (rule {})".format(self.idx, self.batches, self.rulename)
+        return f"{self.idx}/{self.batches} (rule {self.rulename})"
 
 
 class DAG:
@@ -175,11 +175,11 @@ class DAG:
         if forcefiles:
             self.forcefiles.update(forcefiles)
         if untilrules:
-            self.untilrules.update(set(rule.name for rule in untilrules))
+            self.untilrules.update({rule.name for rule in untilrules})
         if untilfiles:
             self.untilfiles.update(untilfiles)
         if omitrules:
-            self.omitrules.update(set(rule.name for rule in omitrules))
+            self.omitrules.update({rule.name for rule in omitrules})
         if omitfiles:
             self.omitfiles.update(omitfiles)
 
@@ -270,9 +270,9 @@ class DAG:
                 yield job
 
     def update_checkpoint_outputs(self):
-        workflow.checkpoints.future_output = set(
+        workflow.checkpoints.future_output = {
             f for job in self.checkpoint_jobs for f in job.output
-        )
+        }
 
     def update_jobids(self):
         for job in self.jobs:
@@ -282,11 +282,11 @@ class DAG:
     def cleanup_workdir(self):
         for job in self.jobs:
             if not self.is_edit_notebook_job(job):
-                for io_dir in set(
+                for io_dir in {
                     os.path.dirname(io_file)
                     for io_file in chain(job.output, job.input)
                     if not os.path.exists(io_file)
-                ):
+                }:
                     if os.path.exists(io_dir):
                         # check for empty dir
                         with os.scandir(io_dir) as i:
@@ -600,7 +600,7 @@ class DAG:
                     force_stay_on_remote=force_stay_on_remote,
                     ignore_pipe_or_service=True,
                 )
-            except IOError as e:
+            except OSError as e:
                 raise MissingOutputException(
                     str(e), rule=job.rule, jobid=self.jobid(job)
                 )
@@ -683,7 +683,7 @@ class DAG:
         """Write-protect output files that are marked with protected()."""
         for f in job.expanded_output:
             if f in job.protected_output:
-                logger.info("Write-protecting output file {}.".format(f))
+                logger.info(f"Write-protecting output file {f}.")
                 f.protect()
 
     def handle_touch(self, job):
@@ -691,14 +691,13 @@ class DAG:
         for f in job.expanded_output:
             if f in job.touch_output:
                 f = job.shadowed_path(f)
-                logger.info("Touching output file {}.".format(f))
+                logger.info(f"Touching output file {f}.")
                 f.touch_or_create()
                 assert os.path.exists(f)
 
     def temp_input(self, job):
         for job_, files in self.dependencies[job].items():
-            for f in filter(job_.temp_output.__contains__, files):
-                yield f
+            yield from filter(job_.temp_output.__contains__, files)
 
     def temp_size(self, job):
         """Return the total size of temporary input files of the job.
@@ -728,7 +727,7 @@ class DAG:
         def unneeded_files():
             # temp input
             for job_, files in self.dependencies[job].items():
-                tempfiles = set(f for f in job_.expanded_output if is_temp(f))
+                tempfiles = {f for f in job_.expanded_output if is_temp(f)}
                 yield from filterfalse(partial(needed, job_), tempfiles & files)
 
             # temp output
@@ -751,7 +750,7 @@ class DAG:
             if self.dryrun:
                 logger.info(f"Would remove temporary output {f}")
             else:
-                logger.info("Removing temporary output {}.".format(f))
+                logger.info(f"Removing temporary output {f}.")
                 f.remove(remove_non_empty_dir=True)
 
     def handle_log(self, job, upload_remote=True):
@@ -824,7 +823,7 @@ class DAG:
 
             for f in unneeded_files():
                 if f.exists_local:
-                    logger.info("Removing local copy of remote file: {}".format(f))
+                    logger.info(f"Removing local copy of remote file: {f}")
                     f.remove()
 
     def jobid(self, job):
@@ -905,7 +904,7 @@ class DAG:
                     "the output files more specific. "
                     "A common pattern is to have different prefixes "
                     "in the output files of different rules."
-                    + "\nProblematic file pattern: {}".format(file)
+                    + f"\nProblematic file pattern: {file}"
                     if file
                     else "",
                 )
@@ -920,7 +919,7 @@ class DAG:
 
         n = len(self.dependencies)
         if progress and n % 1000 == 0 and n and self._progress != n:
-            logger.info("Processed {} potential jobs.".format(n))
+            logger.info(f"Processed {n} potential jobs.")
             self._progress = n
 
         producers.sort(reverse=True)
@@ -1216,7 +1215,7 @@ class DAG:
 
         # bi-directional BFS to determine further needrun jobs
         visited = set(queue)
-        candidates_set = set(job for level in candidates for job in level)
+        candidates_set = {job for level in candidates for job in level}
         while queue:
             job = queue.popleft()
             _needrun.add(job)
@@ -1584,7 +1583,7 @@ class DAG:
                 depending = list(self.depending[job])
                 # re-evaluate depending jobs, replace and update DAG
                 for j in depending:
-                    logger.debug("Updating job {}.".format(j))
+                    logger.debug(f"Updating job {j}.")
                     newjob = j.updated()
                     self.replace_job(j, newjob, recursive=False)
                     updated = True
@@ -1741,7 +1740,7 @@ class DAG:
                 if newrule_ is not None:
                     self.specialize_rule(job_.rule, newrule_)
                     if not self.dynamic(job_):
-                        logger.debug("Updating job {}.".format(job_))
+                        logger.debug(f"Updating job {job_}.")
                         newjob_ = self.new_job(
                             newrule_, targetfile=job_.output[0] if job_.output else None
                         )
@@ -1821,10 +1820,10 @@ class DAG:
 
         self.update([newjob])
 
-        logger.debug("Replace {} with dynamic branch {}".format(job, newjob))
+        logger.debug(f"Replace {job} with dynamic branch {newjob}")
         for job_, files in depending:
             # if not job_.dynamic_input:
-            logger.debug("updating depending job {}".format(job_))
+            logger.debug(f"updating depending job {job_}")
             self.dependencies[job_][newjob].update(files)
             self.depending[newjob][job_].update(files)
 
@@ -1935,14 +1934,12 @@ class DAG:
             for job_ in direction[job]:
                 if not job_ in visited:
                     visited.add(job_)
-                    for j in _dfs(job_):
-                        yield j
+                    yield from _dfs(job_)
             if post:
                 yield job
 
         for job in jobs:
-            for job_ in self._dfs(direction, job, visited, stop=stop, post=post):
-                yield job_
+            yield from self._dfs(direction, job, visited, stop=stop, post=post)
 
     def new_wildcards(self, job):
         """Return wildcards that are newly introduced in this job,
@@ -2039,7 +2036,7 @@ class DAG:
             name, value = wildcard
             if DYNAMIC_FILL in value:
                 value = "..."
-            return "{}: {}".format(name, value)
+            return f"{name}: {value}"
 
         node2rule = lambda job: job.rule
         node2label = lambda job: "\\n".join(
@@ -2064,8 +2061,7 @@ class DAG:
         # color rules
         huefactor = 2 / (3 * len(self.rules))
         rulecolor = {
-            rule: "{:.2f} 0.6 0.85".format(i * huefactor)
-            for i, rule in enumerate(self.rules)
+            rule: f"{i * huefactor:.2f} 0.6 0.85" for i, rule in enumerate(self.rules)
         }
 
         # markup
@@ -2174,7 +2170,7 @@ class DAG:
                     node_id=node_id, color=color
                 ),
                 "<tr><td>",
-                '<b><font point-size="18">{node.name}</font></b>'.format(node=node),
+                f'<b><font point-size="18">{node.name}</font></b>',
                 "</td></tr>",
                 "<hr/>",
                 '<tr><td align="left"> {input_header} </td></tr>'.format(
@@ -2284,7 +2280,7 @@ class DAG:
                 elif self.reason(job).updated_input:
                     status = "updated input files"
                 elif self.workflow.persistence.version_changed(job, file=f):
-                    status = "version changed to {}".format(job.rule.version)
+                    status = f"version changed to {job.rule.version}"
                 elif self.workflow.persistence.code_changed(job, file=f):
                     status = "rule implementation changed"
                 elif self.workflow.persistence.input_changed(job, file=f):
@@ -2379,7 +2375,7 @@ class DAG:
                     # symlinks fail f.exists.
                     if f.exists or os.path.islink(f):
                         if f.protected:
-                            logger.error("Skipping write-protected file {}.".format(f))
+                            logger.error(f"Skipping write-protected file {f}.")
                         else:
                             msg = "Deleting {}" if not dryrun else "Would delete {}"
                             logger.info(msg.format(f))
@@ -2427,9 +2423,7 @@ class DAG:
         jobs = list(self.jobs)
 
         if len(jobs) > max_jobs:
-            logger.info(
-                "Job-DAG is too large for visualization (>{} jobs).".format(max_jobs)
-            )
+            logger.info(f"Job-DAG is too large for visualization (>{max_jobs} jobs).")
         else:
             logger.d3dag(
                 nodes=[node(job) for job in jobs],
@@ -2513,9 +2507,9 @@ class DAG:
             # Then, for each pipe_group, we find the dependencies of every job in the
             # group, filtering out any dependencies that are, themselves, in the group
             for name, group in pipe_groups.items():
-                pipe_dependencies[name] = set(
+                pipe_dependencies[name] = {
                     d for job in group for d in self.dependencies[job] if d not in group
-                )
+                }
 
         # Collect every job's dependencies into a definitive mapping
         dependencies = {}

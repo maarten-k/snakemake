@@ -201,7 +201,7 @@ class Rule:
             # perform the partial expansion from f's string representation
             s = str(f).replace("{", "{{").replace("}", "}}")
             for key in wildcards.keys():
-                s = s.replace("{{{{{}}}}}".format(key), "{{{}}}".format(key))
+                s = s.replace(f"{{{{{key}}}}}", f"{{{key}}}")
             # build result
             anno_s = AnnotatedString(s)
             anno_s.flags = f.flags
@@ -246,11 +246,11 @@ class Rule:
                     branch.touch_output.update(exp)
 
             branch.wildcard_names.clear()
-            non_dynamic_wildcards = dict(
-                (name, values[0])
+            non_dynamic_wildcards = {
+                name: values[0]
                 for name, values in wildcards.items()
                 if len(set(values)) == 1
-            )
+            }
             # TODO have a look into how to concretize dependencies here
             branch._input, _, branch.dependencies, incomplete = branch.expand_input(
                 non_dynamic_wildcards
@@ -320,7 +320,7 @@ class Rule:
                     "Rules without output files cannot be cached.", rule=self
                 )
             if len(self.output) > 1:
-                prefixes = set(out.multiext_prefix for out in self.output)
+                prefixes = {out.multiext_prefix for out in self.output}
                 if None in prefixes or len(prefixes) > 1:
                     raise RuleException(
                         "Rules with multiple output files must define them as a single multiext() "
@@ -1209,14 +1209,12 @@ class Rule:
             return False
         except sre_constants.error as ex:
             raise IOFileException(
-                "{} in wildcard statement".format(ex),
+                f"{ex} in wildcard statement",
                 snakefile=self.snakefile,
                 lineno=self.lineno,
             )
         except ValueError as ex:
-            raise IOFileException(
-                "{}".format(ex), snakefile=self.snakefile, lineno=self.lineno
-            )
+            raise IOFileException(f"{ex}", snakefile=self.snakefile, lineno=self.lineno)
 
     def get_wildcards(self, requested_output, wildcards_dict=None):
         """

@@ -40,7 +40,7 @@ class RemoteProvider(AbstractRemoteProvider):
         retry=None,
         **kwargs,
     ):
-        super(RemoteProvider, self).__init__(
+        super().__init__(
             *args,
             keep_local=keep_local,
             stay_on_remote=stay_on_remote,
@@ -66,9 +66,7 @@ class RemoteProvider(AbstractRemoteProvider):
 
 class RemoteObject(AbstractRemoteRetryObject):
     def __init__(self, *args, keep_local=False, provider=None, **kwargs):
-        super(RemoteObject, self).__init__(
-            *args, keep_local=keep_local, provider=provider, **kwargs
-        )
+        super().__init__(*args, keep_local=keep_local, provider=provider, **kwargs)
         if self.provider:
             self.gfalcntxt = provider.remote_interface()
         else:

@@ -34,15 +34,15 @@ class RemoteProvider(AbstractRemoteProvider):
         stay_on_remote=False,
         is_default=False,
         email=None,
-        **kwargs
+        **kwargs,
     ):
-        super(RemoteProvider, self).__init__(
+        super().__init__(
             *args,
             keep_local=keep_local,
             stay_on_remote=stay_on_remote,
             is_default=is_default,
             email=email,
-            **kwargs
+            **kwargs,
         )
         self._ncbi = NCBIHelper(*args, email=email, **kwargs)
 
@@ -82,9 +82,9 @@ class RemoteObject(AbstractRemoteObject):
         db=None,
         rettype=None,
         retmode=None,
-        **kwargs
+        **kwargs,
     ):
-        super(RemoteObject, self).__init__(
+        super().__init__(
             *args,
             keep_local=keep_local,
             stay_on_remote=stay_on_remote,
@@ -93,7 +93,7 @@ class RemoteObject(AbstractRemoteObject):
             db=db,
             rettype=rettype,
             retmode=retmode,
-            **kwargs
+            **kwargs,
         )
         if provider:
             self._ncbi = provider.remote_interface()
@@ -148,7 +148,7 @@ class RemoteObject(AbstractRemoteObject):
                 retmode=self.retmode,
                 file_ext=self.file_ext,
                 db=self.db,
-                **self.kwargs
+                **self.kwargs,
             )
         else:
             raise NCBIFileException(
@@ -182,7 +182,7 @@ class RemoteObject(AbstractRemoteObject):
         return version
 
 
-class NCBIHelper(object):
+class NCBIHelper:
     def __init__(self, *args, email=None, **kwargs):
         if not email:
             raise NCBIFileException(
@@ -335,7 +335,7 @@ class NCBIHelper(object):
         extensions = set()
         for db, db_options in self.efetch_options.items():
             for options in db_options:
-                extensions |= set([options["ext"]])
+                extensions |= {options["ext"]}
         return list(extensions)
 
     def dbs_for_options(self, file_ext, rettype=None, retmode=None):
@@ -347,7 +347,7 @@ class NCBIHelper(object):
                         continue
                     if rettype and option_dict["rettype"] != rettype:
                         continue
-                    possible_dbs |= set([db])
+                    possible_dbs |= {db}
                     break
         return possible_dbs
 
@@ -479,7 +479,7 @@ class NCBIHelper(object):
         return_type=int,
         raise_on_failure=True,
         retmode="xml",
-        **kwargs
+        **kwargs,
     ):
         result = self.entrez.esummary(db=db, id=accession, **kwargs)
 
@@ -542,7 +542,7 @@ class NCBIHelper(object):
         remove_separate_files=False,
         chunk_size=1,
         db="nuccore",
-        **kwargs
+        **kwargs,
     ):
         """
         This function downloads and saves files from NCBI.
@@ -594,7 +594,7 @@ class NCBIHelper(object):
                 )
             else:
                 output_file_path = os.path.join(
-                    output_directory, "chunk-{}".format(chunk_num) + output_extension
+                    output_directory, f"chunk-{chunk_num}" + output_extension
                 )
 
             if not force_overwrite:
@@ -622,7 +622,7 @@ class NCBIHelper(object):
                         for line in handle:
                             outf.write(line)
                     output_files.append(output_file_path)
-                except IOError:
+                except OSError:
                     logger.warning(
                         "Error fetching file {}: {}, try #{} probably because NCBI is too busy.".format(
                             chunk_num + 1, acc_string, try_count
@@ -713,8 +713,7 @@ class NCBIHelper(object):
                 term=query, *args, db=db, idtype=idtype, **kwargs
             )
 
-            for acc in result_ids(json_results):
-                yield acc
+            yield from result_ids(json_results)
 
             if return_all and (
                 "count" in json_results["esearchresult"]

@@ -26,7 +26,7 @@ class DefaultResources:
 
     @classmethod
     def encode_arg(cls, name, value):
-        return "{}={}".format(name, value)
+        return f"{name}={value}"
 
     def __init__(self, args=None, from_other=None, mode="full"):
         if mode == "full":
@@ -34,7 +34,7 @@ class DefaultResources:
         elif mode == "bare":
             self._args = dict(DefaultResources.bare_defaults)
         else:
-            raise ValueError("Unexpected mode for DefaultResources: {}".format(mode))
+            raise ValueError(f"Unexpected mode for DefaultResources: {mode}")
 
         if from_other is not None:
             self._args = dict(from_other._args)
@@ -84,7 +84,7 @@ class DefaultResources:
             self.parsed.update(parse_resources(self._args, fallback=fallback))
 
     def set_resource(self, name, value):
-        self._args[name] = "{}".format(value)
+        self._args[name] = f"{value}"
         self.parsed[name] = value
 
     @property
@@ -134,7 +134,7 @@ class ResourceScopes(UserDict):
         -------
         set
         """
-        return set(res for res, scope in self.data.items() if scope == "local")
+        return {res for res, scope in self.data.items() if scope == "local"}
 
     @property
     def globals(self):
@@ -144,7 +144,7 @@ class ResourceScopes(UserDict):
         -------
         set
         """
-        return set(res for res, scope in self.data.items() if scope == "global")
+        return {res for res, scope in self.data.items() if scope == "global"}
 
     @property
     def excluded(self):
@@ -159,7 +159,7 @@ class ResourceScopes(UserDict):
         -------
         set
         """
-        return set(res for res, scope in self.data.items() if scope == "excluded")
+        return {res for res, scope in self.data.items() if scope == "excluded"}
 
 
 class GroupResources:
