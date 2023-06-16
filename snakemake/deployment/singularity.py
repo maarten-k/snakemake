@@ -7,7 +7,6 @@ import subprocess
 import shutil
 import os
 import hashlib
-from packaging.version import parse
 
 from snakemake.common import (
     is_local_file,
@@ -17,6 +16,7 @@ from snakemake.common import (
 )
 from snakemake.exceptions import WorkflowError
 from snakemake.logging import logger
+from snakemake.deployment import version_compare
 
 
 SNAKEMAKE_MOUNTPOINT = "/mnt/snakemake"
@@ -173,12 +173,12 @@ class Singularity:
                 )
             if v.startswith("apptainer"):
                 v = v.rsplit(" ", 1)[-1]
-                if not parse(v) >= parse("1.0.0"):
-                    raise WorkflowError("Minimum apptainer version is 1.0.0.")
+                if not version_compare.compare_version_geq(v,"1.0.0"):
+                    raise WorkflowError(f"Minimum apptainer version is 1.0.0. Found version {v}")
             else:
                 v = v.rsplit(" ", 1)[-1]
                 if v.startswith("v"):
                     v = v[1:]
-                if not parse(v) >= parse("2.4.1"):
-                    raise WorkflowError("Minimum singularity version is 2.4.1.")
+                if not version_compare.compare_version_geq(v,"2.4.1"):
+                    raise WorkflowError(f"Minimum singularity version is 2.4.1. Found version {v}")
             self._version = v

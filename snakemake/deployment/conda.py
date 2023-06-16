@@ -16,7 +16,6 @@ import subprocess
 import tempfile
 import hashlib
 import shutil
-from packaging.version import Version
 import json
 from glob import glob
 import tarfile
@@ -36,7 +35,8 @@ from snakemake.common import (
     parse_uri,
     ON_WINDOWS,
 )
-from snakemake.deployment import singularity, containerize
+from snakemake.deployment import singularity, containerize,version_compare
+
 from snakemake.io import (
     IOFile,
     apply_wildcards,
@@ -756,7 +756,7 @@ class Conda:
             )
         else:
             version = version_matches[0]
-        if Version(version) < Version("4.2"):
+        if not version_compare.compare_version_geq(version,"4.2"):
             raise CreateCondaEnvironmentException(
                 "Conda must be version 4.2 or later, found version {}.".format(version)
             )
