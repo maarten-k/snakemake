@@ -993,7 +993,7 @@ class GoogleLifeSciencesExecutor(ClusterExecutor):
                         continue
 
                     # The operation is done
-                    if status.get("done", False) == True:
+                    if status.get("done", False) is True:
                         # Derive success/failure from status codes (prints too)
                         if self._job_was_successful(status):
                             j.callback(j.job)

@@ -734,7 +734,7 @@ class ClusterExecutor(RealExecutor):
         except IOError as e:
             raise WorkflowError(e)
 
-        if not "jobid" in get_wildcard_names(jobname):
+        if "jobid" not in get_wildcard_names(jobname):
             raise WorkflowError(
                 'Defined jobname ("{}") has to contain the wildcard {jobid}.'
             )

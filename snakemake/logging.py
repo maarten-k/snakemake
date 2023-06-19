@@ -436,7 +436,7 @@ class Logger:
             )
             for item in ["input", "output", "log"]:
                 fmt = format_item(item, omit=[], valueformat=", ".join)
-                if fmt != None:
+                if fmt is not None:
                     yield fmt
 
             singleitems = ["jobid", "benchmark"]
@@ -444,7 +444,7 @@ class Logger:
                 singleitems.append("reason")
             for item in singleitems:
                 fmt = format_item(item, omit=None)
-                if fmt != None:
+                if fmt is not None:
                     yield fmt
 
             wildcards = format_wildcards(msg["wildcards"])
@@ -453,7 +453,7 @@ class Logger:
 
             for item, omit in zip("priority threads".split(), [0, 1]):
                 fmt = format_item(item, omit=omit)
-                if fmt != None:
+                if fmt is not None:
                     yield fmt
 
             resources = format_resources(msg["resources"])

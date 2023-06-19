@@ -437,7 +437,7 @@ class Workflow:
         """
         if not self._rules:
             raise NoRulesException()
-        if not name in self._rules:
+        if name not in self._rules:
             raise UnknownRuleException(name)
         return self._rules[name]
 
@@ -1565,7 +1565,7 @@ class Workflow:
                 rule.container_img = ruleinfo.container_img
                 rule.is_containerized = ruleinfo.is_containerized
             elif self.global_container_img:
-                if not invalid_rule and ruleinfo.container_img != False:
+                if not invalid_rule and ruleinfo.container_img is not False:
                     # skip rules with run directive or empty image
                     rule.container_img = self.global_container_img
                     rule.is_containerized = self.global_is_containerized
@@ -1625,7 +1625,7 @@ class Workflow:
 
             if ruleinfo.default_target is True:
                 self.default_target = rule.name
-            elif not (ruleinfo.default_target is False):
+            elif ruleinfo.default_target is not False:
                 raise WorkflowError(
                     "Invalid argument for 'default_target:' directive. Only True allowed. "
                     "Do not use the directive for rules that shall not be the default target. ",

@@ -809,7 +809,7 @@ class DAG:
                         if not needed(job_, f):
                             yield f
                 for f, f_ in zip(job.output, job.rule.output):
-                    if putative(f) and not needed(job, f) and not f in self.targetfiles:
+                    if putative(f) and not needed(job, f) and f not in self.targetfiles:
                         if f in job.dynamic_output:
                             for f_ in job.expand_dynamic(f_):
                                 yield f_
@@ -1899,7 +1899,7 @@ class DAG:
                 continue
             yield job
             for job_ in direction[job].keys():
-                if not job_ in visited:
+                if job_ not in visited:
                     queue.append(job_)
                     visited.add(job_)
 
@@ -1916,7 +1916,7 @@ class DAG:
             yield level, job
             level += 1
             for job_, _ in direction[job].items():
-                if not job_ in visited:
+                if job_ not in visited:
                     queue.append((job_, level))
                     visited.add(job_)
 
@@ -1931,7 +1931,7 @@ class DAG:
             if not post:
                 yield job
             for job_ in direction[job]:
-                if not job_ in visited:
+                if job_ not in visited:
                     visited.add(job_)
                     for j in _dfs(job_):
                         yield j

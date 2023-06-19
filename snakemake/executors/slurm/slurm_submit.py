@@ -417,7 +417,7 @@ class SlurmExecutor(ClusterExecutor):
             for j in active_jobs:
                 # the job probably didn't make it into slurmdbd yet, so
                 # `sacct` doesn't return it
-                if not j.jobid in status_of_jobs:
+                if j.jobid not in status_of_jobs:
                     # but the job should still be queueing or running and
                     # appear in slurmdbd (and thus `sacct` output) later
                     still_running.append(j)

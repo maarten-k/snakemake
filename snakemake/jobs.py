@@ -612,7 +612,7 @@ class Job(AbstractJob):
         """Return missing input files."""
         # omit file if it comes from a subworkflow
         return set(
-            f for f in self.input if not f.exists and not f in self.subworkflow_input
+            f for f in self.input if not f.exists and f not in self.subworkflow_input
         )
 
     @property

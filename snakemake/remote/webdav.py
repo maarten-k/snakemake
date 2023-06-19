@@ -87,7 +87,7 @@ class RemoteObject(DomainObject):
             kwargs_to_use = {}
             kwargs_to_use["host"] = self.host
             kwargs_to_use["protocol"] = self.protocol
-            kwargs_to_use["port"] = int(self.port) if self.port != None else 443
+            kwargs_to_use["port"] = int(self.port) if self.port is not None else 443
             for k, v in self.provider.kwargs.items():
                 kwargs_to_use[k] = v
             for k, v in self.kwargs.items():
